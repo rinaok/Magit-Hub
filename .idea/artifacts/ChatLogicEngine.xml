@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="ChatLogicEngine">
+    <output-path>$PROJECT_DIR$/out/artifacts/ChatLogicEngine</output-path>
+    <root id="archive" name="ChatLogicEngine.jar">
+      <element id="module-output" name="logicEngine" />
+    </root>
+  </artifact>
+</component>
