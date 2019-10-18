@@ -10,6 +10,7 @@ import java.util.Date;
 public class Branch implements GitFile{
     private String name;
     private Commit head;
+    private String commitSha1;
     private boolean isActive;
     private boolean isRemote;
     private boolean tracking;
@@ -126,5 +127,9 @@ public class Branch implements GitFile{
 
     public Date getCreationDate(){
         return creationDate;
+    }
+
+    public void setCommitSha1(String commitSha1){
+        this.commitSha1 = commitSha1;
     }
 }

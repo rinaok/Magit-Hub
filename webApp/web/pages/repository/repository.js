@@ -25,11 +25,11 @@ function showBranchesData(branches){
 
 function showCommits(commits){
     var htmlString = '<tr class="child"><td>'
-        + r["SHA1"] + '</td><td>'
-        + r["Message"] + '</td><td>'
-        + r["CreationDate"] + '</td><td>'
-        + r["CreatedBy"] + '</td><td>'
-        + r["Branches"] + '</td></tr>';
+        + commits["SHA1"] + '</td><td>'
+        + commits["Message"] + '</td><td>'
+        + commits["CreationDate"] + '</td><td>'
+        + commits["CreatedBy"] + '</td><td>'
+        + commits["Branches"] + '</td></tr>';
     $('#commitsTable tbody').append(htmlString);
 
     htmlString += '</tr>';
@@ -43,6 +43,5 @@ function showCommits(commits){
             htmlString += '</tr>';
         }
     }
-    document.getElementById('container').innerHTML = html;
 }
 

@@ -22,3 +22,26 @@ function showBranchesData(branches){
         branchesList.append("<li class='list-group-item'>"+branches[i].name+"</li>");
     }
 }
+
+function showCommits(commits){
+    var htmlString = '<tr class="child"><td>'
+        + commits["SHA1"] + '</td><td>'
+        + commits["Message"] + '</td><td>'
+        + commits["CreationDate"] + '</td><td>'
+        + commits["CreatedBy"] + '</td><td>'
+        + commits["Branches"] + '</td></tr>';
+    $('#commitsTable tbody').append(htmlString);
+
+    htmlString += '</tr>';
+    var table = document.getElementById("commitsTable");
+    if (table != null) {
+        for (var i = 0; i < rows.length; i++) {
+            htmlString += '<tr>';
+            for (var j in rows[i]) {
+                htmlString += '<td>' + commits[i][j] + '</td>';
+            }
+            htmlString += '</tr>';
+        }
+    }
+}
+
