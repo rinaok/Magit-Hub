@@ -9,7 +9,8 @@ $(function() { // onload...do
             console.log(e.responseText);
         },
         success: function (r) {
-            var branches = r;
+            var branches = JSON.parse(r);
+            debugger
             console.log(branches);
         }
     })

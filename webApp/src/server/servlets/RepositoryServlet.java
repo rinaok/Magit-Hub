@@ -5,6 +5,8 @@ import engine.ui.UIManager;
 import logic.manager.Exceptions.FailedToCreateRepositoryException;
 import logic.manager.Repository;
 import logic.modules.Branch;
+import logic.modules.Commit;
+import server.utils.RepoMagitFile;
 import server.utils.ServletUtils;
 import server.utils.SessionUtils;
 
@@ -48,11 +50,9 @@ public class RepositoryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Branch> branches = uiManager.getBranches();
-        List<String> branchesList = new ArrayList<>();
-        for (Branch branch : branches) {
-            branchesList.add(branch.getName());
-        }
-        String json = new Gson().toJson(branchesList);
+        List<Commit> commits = new ArrayList<>(uiManager.getCommitsMap().values());
+        RepoMagitFile magitFile = new RepoMagitFile(branches, commits);
+        String json = new Gson().toJson(magitFile);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);
