@@ -19,41 +19,48 @@
 		</div><br>
 		<div class="container-fluid">
 			<div class="row">
-				<div class="col-12">
-					<ul class="list-group" id="branchesList">
+				<div class="col-9">
+                    <h3>Branches</h3>
+                    <ul class="list-group" id="branchesList">
 					</ul>
 				</div>
-			</div>
-			<br>
+                <div class="col-3">
+                    <div class="form-group">
+                        <input id="createBranch" type="submit" class="btn btn-primary pull-right" value="Create Branch">
+                        <input id=checkout type="submit" class="btn btn-primary pull-right" value="Checkout">
+                    </div>
+                </div>
 			<div class="row">
-			<div class="col-8">
-				<h3>Head Branch Commits</h3>
-				<table class="table table-hover" id="commitsTable">
-					<thead>
-					<tr>
-						<th>SHA1</th>
-						<th>Message</th>
-						<th>Creation Date</th>
-						<th>Created By</th>
-						<th>Branches</th>
-					</tr>
-					</thead>
-					<tbody>
-					</tbody>
-				</table>
-				</div>
-				<div class="col-4">
-					<h4>Commit Files</h4>
-					<table class="table table-hover" id="commitFilesTable">
-						<thead>
-						<tr>
-							<th>File Name</th>
-						</tr>
-						</thead>
-						<tbody>
-						</tbody>
-					</table>
-				</div>
+                <div class="col-8">
+                    <br>
+                    <h3>Head Branch Commits</h3>
+                    <table class="table table-hover" id="commitsTable">
+                        <thead>
+                        <tr>
+                            <th>SHA1</th>
+                            <th>Message</th>
+                            <th>Creation Date</th>
+                            <th>Created By</th>
+                            <th>Branches</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-4">
+                    <br>
+                    <h3>Commit Files</h3>
+                    <table class="table table-hover" id="commitFilesTable">
+                        <thead>
+                        <tr>
+                            <th>File Name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
 			</div>
 		</div>
 	</div>

@@ -19,7 +19,15 @@ function showBranchesData(branches){
     var branchesList = $('#branchesList');
     branchesList.empty();
     for (var i = 0 ; i < branches.length; i++) {
-        branchesList.append("<li class='list-group-item'>"+branches[i].name+"</li>");
+        var branch = branches[i];
+        if(branch.isHead){
+            branchesList.append("<li class='list-group-item list-group-item-primary'><h6>" + branch.name + "  ||  Head Branch</h6><p>" + branch.commitSha1 + "</p>" +
+                "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Delete\" style=\"float: right;\"></li>");
+        }
+        else{
+            branchesList.append("<li class='list-group-item list-group-item-light'><h6>" + branch.name + "</h6><p>" + branch.commitSha1 + "</p>" +
+                "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Delete\" style=\"float: right;\"></li>");
+        }
     }
 }
 
