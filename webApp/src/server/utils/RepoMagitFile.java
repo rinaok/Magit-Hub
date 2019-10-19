@@ -1,16 +1,42 @@
 package server.utils;
+
 import logic.modules.Branch;
 import logic.modules.Commit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RepoMagitFile {
+
+    public class ExtendedCommit {
+        private String sha1;
+        private List<String> pointingBranches;
+        private Commit commit;
+
+        public ExtendedCommit(Commit commit){
+            this.commit = commit;
+            sha1 = commit.createHashCode();
+            getPointingBranches();
+        }
+
+        private void getPointingBranches(){
+            pointingBranches = new ArrayList<>();
+            for(Branch branch : branches){
+                if(branch.getHead().createHashCode().equals(sha1))
+                    pointingBranches.add(branch.getName());
+            }
+        }
+    }
+
     private List<Branch> branches;
-    private List<Commit> commits;
+    private List<ExtendedCommit> commits; // commit to pointing branches
 
     public RepoMagitFile(List<Branch> branches, List<Commit> commits){
         this.branches = branches;
-        this.commits = commits;
+        this.commits = new ArrayList<>();
+        for(Commit commit : commits){
+            this.commits.add(new ExtendedCommit(commit));
+        }
         setCommitSha1();
     }
 
@@ -19,4 +45,6 @@ public class RepoMagitFile {
             branch.setCommitSha1(branch.getHead().createHashCode());
         }
     }
+
+
 }

@@ -136,8 +136,8 @@ public class UIManager {
         }
     }
 
-    public List<Map<String, String>>  commitFilesDetails() throws IOException, FailedToCreateRepositoryException, ParserConfigurationException {
-        return systemEngine.commitFilesDetails();
+    public List<Map<String, String>>  commitFilesDetails(String commitSha1) throws IOException, FailedToCreateRepositoryException, ParserConfigurationException {
+        return systemEngine.commitFilesDetails(commitSha1);
     }
 
     private String parseListOfMaps(List<Map<String,String>> fileDetails) {

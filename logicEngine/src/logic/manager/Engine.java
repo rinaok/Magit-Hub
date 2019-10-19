@@ -599,10 +599,15 @@ public class Engine {
         }
     }
 
-    public  List<Map<String, String>> commitFilesDetails () throws FailedToCreateRepositoryException, IOException, ParserConfigurationException {
+    public  List<Map<String, String>> commitFilesDetails (String commitSha1) throws FailedToCreateRepositoryException, IOException, ParserConfigurationException {
         if(branchesManager.getActive().getHead().getRootSha1() == null && !firstCommit)
             throw new FailedToCreateRepositoryException("No previous commits were detected");
-        String rootSha1 = branchesManager.getActive().getHead().getRootSha1();
+        //String rootSha1 = branchesManager.getActive().getHead().getRootSha1();
+        if(!commitMapSha1.containsKey(commitSha1)){
+            throw new FailedToCreateRepositoryException("Commit sha1 was not found");
+        }
+
+        String rootSha1 = commitMapSha1.get(commitSha1).getRootSha1();
         List<Map<String, String>> filesData = new ArrayList<>();
 
         if(firstCommit)

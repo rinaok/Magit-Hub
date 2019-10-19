@@ -1,8 +1,13 @@
+var GET_PAGE_DATA = 1;
+var GET_COMMIT_FILES = 2;
+
 $(function() { // onload...do
+    var data = "reqType="+ GET_PAGE_DATA;
     $.ajax({
         method: 'GET',
         url: "repo",
         dataType: 'json',
+        data : data,
         timeout: 4000,
         error: function (e) {
             console.log(e.responseText);
@@ -11,6 +16,7 @@ $(function() { // onload...do
             var branches = r.branches;
             var commits = r.commits;
             showBranchesData(branches);
+            showCommits(commits);
         }
     })
 });
@@ -31,24 +37,70 @@ function showBranchesData(branches){
     }
 }
 
-function showCommits(commits){
-    var htmlString = '<tr class="child"><td>'
-        + commits["SHA1"] + '</td><td>'
-        + commits["Message"] + '</td><td>'
-        + commits["CreationDate"] + '</td><td>'
-        + commits["CreatedBy"] + '</td><td>'
-        + commits["Branches"] + '</td></tr>';
-    $('#commitsTable tbody').append(htmlString);
+function showCommitFiles(files) {
+    var table = document.getElementById("commitFilesTable");
+    $("#commitFilesTable").find("tbody").empty();
+    var tableBody = "";
+    tableBody = tableBody + "<tr>";
+    files.forEach(function(row){
+            tableBody = tableBody + "<tr>";
 
-    htmlString += '</tr>';
-    var table = document.getElementById("commitsTable");
-    if (table != null) {
-        for (var i = 0; i < rows.length; i++) {
-            htmlString += '<tr>';
-            for (var j in rows[i]) {
-                htmlString += '<td>' + commits[i][j] + '</td>';
+            for (var j = 0; j < table.rows.length; j++){
+                tableBody = tableBody + "<td><b>Name </b>" + row["name"] + "<br><b>Type </b>" +
+                row["type"] + "<br><b>SHA1 </b>" + row["sha1"] + "<br><b>Modified By </b>" + row["lastModifier"] +
+                    "<br><b>Modification Date </b>" + row["modificationDate"] + "</td>";
             }
-            htmlString += '</tr>';
+            tableBody = tableBody + "</tr>";
+        }
+    );
+    $('#commitFilesTable tbody').append(tableBody);
+}
+
+
+function showCommits(commits){
+    var tableBody = "";
+    tableBody = tableBody + "<tr>";
+    var table = document.getElementById("commitsTable");
+
+    // Create the data rows.
+// Create the data rows.
+    commits.forEach(function(row) {
+        // Create a new row in the table for every element in the data array.
+        tableBody = tableBody + "<tr>";
+
+        for (var j = 0; j < table.rows.length; j++){
+            tableBody = tableBody + "<td>" + row["sha1"] + "</td>";
+            tableBody = tableBody + "<td>" + row["commit"]["message"] + "</td>";
+            tableBody = tableBody + "<td>" + row["commit"]["creationDate"] + "</td>";
+            tableBody = tableBody + "<td>" + row["commit"]["createdBy"] + "</td>";
+            tableBody = tableBody + "<td>" + row["pointingBranches"] + "</td>";
+        }
+
+        tableBody = tableBody + "</tr>";
+    });
+
+    $('#commitsTable tbody').append(tableBody);
+
+    for (var i = 1; i < table.rows.length; i++) {
+        for (var j = 0; j < table.rows[i].cells.length; j++) {
+            table.rows[i].onclick = function (e) {
+                var commitSha1 = e.currentTarget.firstChild.innerText;
+                var data = "reqType=" + GET_COMMIT_FILES + "&commitSha1=" + commitSha1;
+                $.ajax({
+                    method: 'GET',
+                    data: data,
+                    url: "repo",
+                    processData: false, // Don't process the files
+                    contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+                    timeout: 4000,
+                    error: function (e) {
+                        alert(e.responseText);
+                    },
+                    success: function (files) {
+                        showCommitFiles(files);
+                    }
+                });
+            }
         }
     }
 }
