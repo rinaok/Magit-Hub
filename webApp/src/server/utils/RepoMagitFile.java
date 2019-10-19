@@ -29,15 +29,17 @@ public class RepoMagitFile {
     }
 
     private List<Branch> branches;
-    private List<ExtendedCommit> commits; // commit to pointing branches
+    private List<ExtendedCommit> commits;
+    private List<CommitFile> wcFiles;
 
-    public RepoMagitFile(List<Branch> branches, List<Commit> commits){
+    public RepoMagitFile(List<Branch> branches, List<Commit> commits, List<CommitFile> wcFiles){
         this.branches = branches;
         this.commits = new ArrayList<>();
         for(Commit commit : commits){
             this.commits.add(new ExtendedCommit(commit));
         }
         setCommitSha1();
+        this.wcFiles = wcFiles;
     }
 
     private void setCommitSha1(){
@@ -45,6 +47,5 @@ public class RepoMagitFile {
             branch.setCommitSha1(branch.getHead().createHashCode());
         }
     }
-
 
 }

@@ -14,9 +14,12 @@
 <div class="content">
 	<div class="container-fluid">
 		<h1>MAGit Hub</h1>
-		<div class="button">
-			<a href="../../users/logout">Logout</a>
-		</div><br>
+        <ul>
+            <li><a href="">Create Branch</a></li>
+            <li><a href="">Checkout</a></li>
+            <li><a href="#UpdateWC">Update WC</a></li>
+            <li><a href="../../users/logout">Logout</a></li>
+        </ul>
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-9">
@@ -62,8 +65,35 @@
                     </table>
                 </div>
 			</div>
-		</div>
+            <br>
+            <div class="row">
+                <div class="col-6" id="UpdateWC">
+                    <br>
+                    <h3>Update Working Copy</h3>
+                    <div class="list-group" id="wcFileList">
+                </div>
+            </div>
+        </div>
 	</div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="fileContentModal" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">File Content</h4>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 </body>
 </html>

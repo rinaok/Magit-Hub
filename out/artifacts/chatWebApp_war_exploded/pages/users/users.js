@@ -177,7 +177,7 @@ function getRepositoryByName(username) {
 }
 
 function updateRepositoriesTable(r){
-    var htmlString = '<tr class="child"><td>'
+    var htmlString = '<tr class="child" style=\"cursor:pointer\"><td>'
         + r["Name"] + '</td><td>'
         + r["ActiveBranch"] + '</td><td>'
         + r["BranchesAmount"] + '</td><td>'

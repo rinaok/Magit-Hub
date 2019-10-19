@@ -1,5 +1,6 @@
 var GET_PAGE_DATA = 1;
 var GET_COMMIT_FILES = 2;
+var GET_FILE_CONTENT = 3;
 
 $(function() { // onload...do
     var data = "reqType="+ GET_PAGE_DATA;
@@ -15,8 +16,10 @@ $(function() { // onload...do
         success: function (r) {
             var branches = r.branches;
             var commits = r.commits;
+            var wc = r.wcFiles;
             showBranchesData(branches);
             showCommits(commits);
+            showWCFiles(wc);
         }
     })
 });
@@ -37,6 +40,20 @@ function showBranchesData(branches){
     }
 }
 
+function showWCFiles(files){
+    var wcFileList = $('#wcFileList');
+    wcFileList.empty();
+    for (var i = 0 ; i < files.length; i++) {
+        var file = files[i];
+        if (!file.type.localeCompare("FILE")) {
+            wcFileList.append("<button type=\"button\" class='list-group-item list-group-item-action'" +
+                " data-toggle=\"modal\" data-target=\"#fileContentModal\" id=" + file.sha1 + ">" +
+                "<h6>" + file.name + "</h6><p>"
+                + file.sha1 + "</p></button>");
+        }
+    }
+}
+
 function showCommitFiles(files) {
     var table = document.getElementById("commitFilesTable");
     $("#commitFilesTable").find("tbody").empty();
@@ -44,7 +61,6 @@ function showCommitFiles(files) {
     tableBody = tableBody + "<tr>";
     files.forEach(function(row){
             tableBody = tableBody + "<tr>";
-
             for (var j = 0; j < table.rows.length; j++){
                 tableBody = tableBody + "<td><b>Name </b>" + row["name"] + "<br><b>Type </b>" +
                 row["type"] + "<br><b>SHA1 </b>" + row["sha1"] + "<br><b>Modified By </b>" + row["lastModifier"] +
@@ -104,4 +120,28 @@ function showCommits(commits){
         }
     }
 }
+
+$(document).ready(function(){
+    $(document).on('click', '.list-group', function(e) {
+        var data = "reqType=" + GET_FILE_CONTENT + "&commitSha1=" + e.target.innerHTML;
+        $.ajax({
+            url: 'repo',
+            type: 'GET',
+            data: data,
+            success: function (response) {
+                // Add response in Modal body
+                $('.modal-body').html(response);
+
+                // Display Modal
+                $('#empModal').modal('show');
+            }
+        });
+    });
+});
+
+//         $(document).ready(function(){
+//     $("#fileContentModal").on('show.bs.modal', function(){
+//
+//     });
+// });
 

@@ -6,6 +6,7 @@ import logic.manager.Exceptions.FailedToCreateRepositoryException;
 import logic.manager.Repository;
 import logic.modules.Branch;
 import logic.modules.Commit;
+import server.utils.CommitFile;
 import server.utils.RepoMagitFile;
 import server.utils.ServletUtils;
 import server.utils.SessionUtils;
@@ -17,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -56,17 +56,14 @@ public class RepositoryServlet extends HttpServlet {
         String reqType=request.getParameter("reqType");
             switch (reqType) {
             case GET_REPOSITORY_PAGE_DATA:
-                List<Branch> branches = uiManager.getBranches();
-                List<Commit> commits = new ArrayList<>(uiManager.getCommitsMap().values());
-                RepoMagitFile magitFile = new RepoMagitFile(branches, commits);
-                String json = new Gson().toJson(magitFile);
+                String json = getRepositoryPageData();
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(json);
                 break;
             case GET_REPOSITORY_PAGE_COMMIT_FILES:
                 String commitSha1 = request.getParameter("commitSha1");
-                String filesJson = commitFilesDetails(commitSha1);
+                String filesJson = new Gson().toJson(commitFilesDetails(commitSha1));
                 if (filesJson != null) {
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
@@ -111,14 +108,37 @@ public class RepositoryServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private String commitFilesDetails(String commitSha1){
+    private String getRepositoryPageData(){
+        List<Branch> branches = uiManager.getBranches();
+        List<CommitFile> wcFiles = new ArrayList<>();
+        try {
+            wcFiles = getWC();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (FailedToCreateRepositoryException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<Commit> commits = new ArrayList<>(uiManager.getCommitsMap().values());
+        RepoMagitFile magitFile = new RepoMagitFile(branches, commits, wcFiles);
+        return new Gson().toJson(magitFile);
+    }
+
+    private List<CommitFile> getWC() throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
+        String headSha1 = uiManager.getHeadCommit().createHashCode();
+        return commitFilesDetails(headSha1);
+    }
+
+    private List<CommitFile> commitFilesDetails(String commitSha1){
         try {
             List<Map<String, String>> commitFilesDetails = uiManager.commitFilesDetails(commitSha1);
             List<CommitFile> commitFiles = new ArrayList<>();
             for(Map<String, String> file : commitFilesDetails){
                 commitFiles.add(new CommitFile(file));
             }
-            return new Gson().toJson(commitFiles);
+            //return new Gson().toJson(commitFiles);
+            return commitFiles;
         } catch (FailedToCreateRepositoryException e) {
             e.printStackTrace();
         } catch (ParserConfigurationException e) {
@@ -129,20 +149,4 @@ public class RepositoryServlet extends HttpServlet {
         return null;
     }
 
-    public class CommitFile {
-        private String name;
-        private String type;
-        private String sha1;
-        private String lastModifier;
-        private String modificationDate;
-
-        public CommitFile(Map<String, String> file) {
-            File filePath = new File(file.get("File Path"));
-            name = filePath.getName();
-            type = file.get("Type");
-            sha1 = file.get("SHA1");
-            lastModifier = file.get("Last Modifier");
-            modificationDate = file.get("Modification Date");
-        }
-    }
 }
