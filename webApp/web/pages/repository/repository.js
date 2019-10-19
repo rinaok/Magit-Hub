@@ -66,7 +66,7 @@ function showCommits(commits){
 // Create the data rows.
     commits.forEach(function(row) {
         // Create a new row in the table for every element in the data array.
-        tableBody = tableBody + "<tr>";
+        tableBody = tableBody + "<tr style=\"cursor:pointer\">";
 
         for (var j = 0; j < table.rows.length; j++){
             tableBody = tableBody + "<td>" + row["sha1"] + "</td>";
