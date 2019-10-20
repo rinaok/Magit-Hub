@@ -10,7 +10,6 @@ import server.utils.CommitFile;
 import server.utils.RepoMagitFile;
 import server.utils.ServletUtils;
 import server.utils.SessionUtils;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,6 +28,7 @@ public class RepositoryServlet extends HttpServlet {
 
     private static final String GET_REPOSITORY_PAGE_DATA = "1";
     private static final String GET_REPOSITORY_PAGE_COMMIT_FILES = "2";
+    private static final String GET_FILE_CONTENT = "3";
     private UIManager uiManager;
     private Repository currRepo;
 
@@ -69,6 +69,14 @@ public class RepositoryServlet extends HttpServlet {
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write(filesJson);
                 }
+                break;
+            case GET_FILE_CONTENT:
+                String fileSha1 = request.getParameter("fileSha1");
+                String contentJson = new Gson().toJson(uiManager.getFileContent(fileSha1));
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(contentJson);
+                break;
         }
     }
 

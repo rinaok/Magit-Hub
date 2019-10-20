@@ -123,25 +123,39 @@ function showCommits(commits){
 
 $(document).ready(function(){
     $(document).on('click', '.list-group', function(e) {
-        var data = "reqType=" + GET_FILE_CONTENT + "&commitSha1=" + e.target.innerHTML;
+        var sha1;
+        if(e.target.nextElementSibling != null)
+            sha1 = e.target.nextElementSibling.innerHTML;
+        else
+            sha1 = e.target.innerHTML;
+        var data = "reqType=" + GET_FILE_CONTENT + "&fileSha1=" + sha1;
         $.ajax({
             url: 'repo',
             type: 'GET',
             data: data,
+            error: function (e) {
+                alert(e.responseText);
+            },
             success: function (response) {
                 // Add response in Modal body
-                $('.modal-body').html(response);
-
+                document.getElementById("content").value = response;
                 // Display Modal
-                $('#empModal').modal('show');
+                $('#fileContentModal').modal('show');
             }
         });
     });
 });
 
-//         $(document).ready(function(){
-//     $("#fileContentModal").on('show.bs.modal', function(){
-//
-//     });
-// });
+$(document).on('click', '#editBtn', function (event) {
+    event.preventDefault();
+    var $modal = $('#fileContentModal');
+    $("#content").attr("readonly", false);
+    document.getElementById('saveBtn').style.visibility = 'visible';
+});
+
+$(document).on('show.bs.modal', '#fileContentModal', function (e) {
+    $("#content").attr("readonly", true);
+    document.getElementById('saveBtn').style.visibility = 'hidden';
+});
+
 

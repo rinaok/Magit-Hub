@@ -71,8 +71,9 @@
                     <br>
                     <h3>Update Working Copy</h3>
                     <div class="list-group" id="wcFileList">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="newFile">Add New File</button>
                 </div>
-            </div>
         </div>
 	</div>
 
@@ -85,8 +86,12 @@
                         <h4 class="modal-title">File Content</h4>
                     </div>
                     <div class="modal-body">
+                        <textarea readonly class="form-control col-12" id = "content" rows="5"></textarea>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="saveBtn">Save</button>
+                        <button type="button" class="btn btn-primary" id="editBtn">Edit</button>
+                        <button type="button" class="btn btn-danger" id="deleteBtn">Delete</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
