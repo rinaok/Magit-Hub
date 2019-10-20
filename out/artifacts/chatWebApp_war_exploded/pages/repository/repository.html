@@ -11,6 +11,15 @@
 	<script src="repository.js"></script>
 </head>
 <body>
+
+<div class="container">
+    <div class="alert alert-success alert-dismissable" id="successAlert" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        Success! File changes were saved to the server
+    </div>
+
+</div>
+
 <div class="content">
 	<div class="container-fluid">
 		<h1>MAGit Hub</h1>
@@ -72,9 +81,10 @@
                     <h3>Update Working Copy</h3>
                     <div class="list-group" id="wcFileList">
                     </div>
+                </div>
+                <div class="col-6" id="addFile">
                     <button type="button" class="btn btn-primary" id="newFile">Add New File</button>
                 </div>
-        </div>
 	</div>
 
         <!-- Modal -->

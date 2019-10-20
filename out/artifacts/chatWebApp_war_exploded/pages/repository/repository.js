@@ -1,10 +1,13 @@
 var GET_PAGE_DATA = 1;
 var GET_COMMIT_FILES = 2;
 var GET_FILE_CONTENT = 3;
-var ERROR_CODE = -1;
-var SUCCESS_CODE = 0;
+
+var EDIT_FILE = 4;
+var DELETE_FILE = 5;
+var NEW_FILE =6;
 
 $(function() { // onload...do
+    $("#successAlert").hide();
     var data = "reqType="+ GET_PAGE_DATA;
     $.ajax({
         method: 'GET',
@@ -187,23 +190,47 @@ $(document).on('click', '#saveBtn', function (event) {
     document.getElementById('saveBtn').style.visibility = 'hidden';
     document.getElementById('cancelBtn').style.visibility = 'hidden';
     document.getElementById("editBtn").disabled = false;
-    var fileData = "fileSha1=" + $('#fileContentModal').find('.pl-4').firstChild.textContent + "&content=" + $("#content").val();
+    var sha1 = $('#fileContentModal').find('.pl-4')[0].innerHTML;
+    var fileData = "reqType=" + EDIT_FILE + "&fileSha1=" + sha1 + "&content=" + $("#content").val();
     $.ajax({
         url: 'wc',
         type: 'POST',
         data: fileData,
         error: function (e) {
-            showPopup(ERROR_CODE, e.responseText);
+            alert(e.response);
         },
         success: function (response) {
-            showPopup(SUCCESS_CODE, text);
+            document.getElementById('successAlert').style.visibility = 'visible';
+            $('#successAlert').show();
             $('#fileContentModal').modal('hide');
         }
     });
 });
 
-function showPopup(responseCode, text) {
+$(document).on('click', '#deleteBtn', function (event) {
+    event.preventDefault();
+    var $modal = $('#fileContentModal');
+    var result = confirm("Are you sure you want to delete this file?");
+    if(result){
+        var sha1 = $('#fileContentModal').find('.pl-4')[0].innerHTML;
+        var fileData = "reqType=" + DELETE_FILE + "&fileSha1=" + sha1;
+        $.ajax({
+            url: 'wc',
+            type: 'POST',
+            data: fileData,
+            error: function (e) {
+                alert(e.response);
+            },
+            success: function (response) {
+                $("#successAlert").show();
+                setTimeout(function(){
+                    $("#successAlert").hide();
+                }, 2000);
+                $('#fileContentModal').modal('hide');
+            }
+        });
+    }
+});
 
-}
 
 

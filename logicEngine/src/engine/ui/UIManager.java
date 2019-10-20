@@ -315,8 +315,13 @@ public class UIManager {
     }
 
     public String findFilePath(String sha1) throws IOException {
-        String rootSha1 = systemEngine.getRepositoriesManager().getActive().getWorkingCopy().getRootFolderSha1();
-        List<String> f = systemEngine.getEditedFiles();
+        String rootSha1 = systemEngine.getBranchesManager().getActive().getHead().getRootSha1();
         return systemEngine.findPath(sha1, rootSha1);
+    }
+
+    public void deleteFile(String sha1) throws IOException {
+        String rootSha1 = systemEngine.getBranchesManager().getActive().getHead().getRootSha1();
+        String path = systemEngine.findPath(sha1, rootSha1);
+        Utils.deleteFile(path);
     }
 }

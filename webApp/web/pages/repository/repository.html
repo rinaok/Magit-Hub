@@ -11,6 +11,15 @@
 	<script src="repository.js"></script>
 </head>
 <body>
+
+<div class="container">
+    <div class="alert alert-success alert-dismissable" id="successAlert" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        Success! File changes were saved to the server
+    </div>
+
+</div>
+
 <div class="content">
 	<div class="container-fluid">
 		<h1>MAGit Hub</h1>
@@ -67,17 +76,18 @@
 			</div>
             <br>
             <div class="row">
-                <div class="col-6" id="UpdateWC">
+                <div class="col-3" id="UpdateWC">
                     <br>
                     <h3>Update Working Copy</h3>
                     <div class="list-group" id="wcFileList">
                     </div>
-                    <button type="button" class="btn btn-primary" id="newFile">Add New File</button>
                 </div>
+                <div class="col-3">
+                    <button type="button" class="btn btn-primary" id="addFile">Add New File</button>
+                </div>
+	    </div>
         </div>
-	</div>
-
-        <!-- Modal -->
+        <!-- WC Files Modal -->
         <div class="modal fade" id="fileContentModal" role="dialog">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -95,6 +105,29 @@
                         <button type="button" class="btn btn-primary" id="editBtn">Edit</button>
                         <button type="button" class="btn btn-danger" id="deleteBtn">Delete</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Height Modal Right -->
+        <div class="modal fade right" id="fullHeightModalRight" tabindex="-1" role="dialog"
+             aria-hidden="true">
+            <div class="modal-dialog modal-full-height modal-bottom" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title w-100">Add New File</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="file" class="btn btn-primary pull-right">
+                        <input type="submit" class="btn btn-primary pull-right">
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
                     </div>
                 </div>
             </div>

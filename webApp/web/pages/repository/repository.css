@@ -1,3 +1,14 @@
+.alert-success{
+    position: fixed;
+    bottom: 5px;
+    left:2%;
+    width: 96%;
+}
+
+.alert{
+    display: none;
+}
+
 .list-group-item{
     padding: 0;
     margin-bottom :0;
@@ -29,9 +40,3 @@ li a {
 li a:hover:not(.active) {
     background-color: #ddd;
 }
-
-li a.active {
-    color: white;
-    background-color: #4CAF50;
-}
-

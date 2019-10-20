@@ -74,7 +74,9 @@ public class XmlAdapter extends Engine {
         for (Item item: magitSingleFolder.getItems().getItem()) {
             if(item.getType().equals("blob")){
                 MagitBlob magitBlob = magitBlobs.get(item.getId());
-                Blob blob = new Blob(magitBlob.getContent());
+                String content = magitBlob.getContent();
+                content = content.replaceAll("\\n\\t|\\n|\\t", "\r\n");
+                Blob blob = new Blob(content);
                 FileData fileData = new FileData(magitBlob, blob);
                 XmlblobsAndFolders.put(FileType.FILE + "_" + magitBlob.getId(), fileData);
                 rootFolder.addFileToFolder(blob, fileData.getModifiedBy(), fileData.getName());
