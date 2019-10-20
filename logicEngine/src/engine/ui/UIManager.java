@@ -8,12 +8,14 @@ import logic.manager.Exceptions.FailedToMergeException;
 import logic.manager.Exceptions.XmlParseException;
 import logic.manager.Merge.MergeResult;
 import logic.manager.Repository;
+import logic.manager.Utils;
 import logic.manager.XmlHandler.CallableXml;
 import logic.manager.XmlHandler.XmlAdapter;
 import logic.modules.Branch;
 import logic.modules.Commit;
 
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -306,5 +308,15 @@ public class UIManager {
 
     public CommitDelta getCommitDelta(Commit commit) throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
         return systemEngine.getDeltaToPreviousCommit(commit);
+    }
+
+    public void editFileInServer(String filePath, String content) throws IOException, FailedToCreateRepositoryException {
+        Utils.writeFile(new File(filePath), content);
+    }
+
+    public String findFilePath(String sha1) throws IOException {
+        String rootSha1 = systemEngine.getRepositoriesManager().getActive().getWorkingCopy().getRootFolderSha1();
+        List<String> f = systemEngine.getEditedFiles();
+        return systemEngine.findPath(sha1, rootSha1);
     }
 }

@@ -1,6 +1,8 @@
 var GET_PAGE_DATA = 1;
 var GET_COMMIT_FILES = 2;
 var GET_FILE_CONTENT = 3;
+var ERROR_CODE = -1;
+var SUCCESS_CODE = 0;
 
 $(function() { // onload...do
     var data = "reqType="+ GET_PAGE_DATA;
@@ -124,10 +126,15 @@ function showCommits(commits){
 $(document).ready(function(){
     $(document).on('click', '.list-group', function(e) {
         var sha1;
-        if(e.target.nextElementSibling != null)
+        var fileName;
+        if(e.target.nextElementSibling != null) {
             sha1 = e.target.nextElementSibling.innerHTML;
-        else
+            fileName = e.target.innerHTML;
+        }
+        else {
             sha1 = e.target.innerHTML;
+            fileName = e.target.nextElementSibling.innerHTML;
+        }
         var data = "reqType=" + GET_FILE_CONTENT + "&fileSha1=" + sha1;
         $.ajax({
             url: 'repo',
@@ -140,6 +147,8 @@ $(document).ready(function(){
                 // Add response in Modal body
                 document.getElementById("content").value = response;
                 // Display Modal
+                $('#fileContentModal').find('.modal-header h2').text(fileName);
+                $('#fileContentModal').find('.pl-4').text(sha1);
                 $('#fileContentModal').modal('show');
             }
         });
@@ -151,11 +160,50 @@ $(document).on('click', '#editBtn', function (event) {
     var $modal = $('#fileContentModal');
     $("#content").attr("readonly", false);
     document.getElementById('saveBtn').style.visibility = 'visible';
+    document.getElementById('cancelBtn').style.visibility = 'visible';
+    document.getElementById("editBtn").disabled = true;
 });
 
 $(document).on('show.bs.modal', '#fileContentModal', function (e) {
     $("#content").attr("readonly", true);
     document.getElementById('saveBtn').style.visibility = 'hidden';
+    document.getElementById('cancelBtn').style.visibility = 'hidden';
+    document.getElementById("editBtn").disabled = false;
 });
+
+$(document).on('click', '#cancelBtn', function (event) {
+    event.preventDefault();
+    var $modal = $('#fileContentModal');
+    $("#content").attr("readonly", false);
+    document.getElementById('saveBtn').style.visibility = 'hidden';
+    document.getElementById('cancelBtn').style.visibility = 'hidden';
+    document.getElementById("editBtn").disabled = false;
+});
+
+$(document).on('click', '#saveBtn', function (event) {
+    event.preventDefault();
+    var $modal = $('#fileContentModal');
+    $("#content").attr("readonly", true);
+    document.getElementById('saveBtn').style.visibility = 'hidden';
+    document.getElementById('cancelBtn').style.visibility = 'hidden';
+    document.getElementById("editBtn").disabled = false;
+    var fileData = "fileSha1=" + $('#fileContentModal').find('.pl-4').innerHTML + "&content=" + $("#content").val();
+    $.ajax({
+        url: 'wc',
+        type: 'POST',
+        data: fileData,
+        error: function (e) {
+            showPopup(ERROR_CODE, e.responseText);
+        },
+        success: function (response) {
+            showPopup(SUCCESS_CODE, text);
+            $('#fileContentModal').modal('hide');
+        }
+    });
+});
+
+function showPopup(responseCode, text) {
+
+}
 
 
