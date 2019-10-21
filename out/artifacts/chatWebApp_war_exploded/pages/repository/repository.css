@@ -1,3 +1,14 @@
+.alert-success{
+    position: fixed;
+    bottom: 5px;
+    left:2%;
+    width: 96%;
+}
+
+.alert{
+    display: none;
+}
+
 .list-group-item{
     padding: 0;
     margin-bottom :0;
@@ -30,13 +41,4 @@ li a:hover:not(.active) {
     background-color: #ddd;
 }
 
-.alert-success{
-    position: fixed;
-    bottom: 5px;
-    left:2%;
-    width: 96%;
-}
-
-.alert{
-    display: none;
-}
+#files-tree{width:400px;}

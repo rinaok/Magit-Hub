@@ -599,6 +599,23 @@ public class Engine {
         }
     }
 
+    public List<WCFileNode> createFilesTree(String commitSha1) throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
+        String rootSha1 = commitMapSha1.get(commitSha1).getRootSha1();
+        List<WCFileNode> tree = new ArrayList<>();
+        final List<WCFileNode>[] rootLevel = new List[]{tree};
+        ActionsOnObjectsInterface actionInterface = (obj, path) ->
+        {
+            WCFileNode node = new WCFileNode(obj[fileNameIndex], obj[sha1Index]);
+            rootLevel[0].add(node);
+            if(obj[fileTypeIndex].equals(FileType.DIRECTORY.toString())){
+                rootLevel[0] = rootLevel[0].get(rootLevel[0].size() - 1).getNodes();
+            }
+        };
+
+        recursiveRunOverObjectFiles(rootSha1, magitRepo + "\\" + Environment.OBJECTS, actionInterface, magitRepo + "\\" + Environment.OBJECTS, magitRepo + "\\" + Environment.OBJECTS);
+        return tree;
+    }
+
     public  List<Map<String, String>> commitFilesDetails (String commitSha1) throws FailedToCreateRepositoryException, IOException, ParserConfigurationException {
         if(branchesManager.getActive().getHead().getRootSha1() == null && !firstCommit)
             throw new FailedToCreateRepositoryException("No previous commits were detected");

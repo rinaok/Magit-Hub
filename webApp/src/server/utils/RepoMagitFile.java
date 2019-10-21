@@ -1,5 +1,6 @@
 package server.utils;
 
+import logic.manager.WCFileNode;
 import logic.modules.Branch;
 import logic.modules.Commit;
 
@@ -30,9 +31,9 @@ public class RepoMagitFile {
 
     private List<Branch> branches;
     private List<ExtendedCommit> commits;
-    private List<CommitFile> wcFiles;
+    private List<WCFileNode> wcFiles;
 
-    public RepoMagitFile(List<Branch> branches, List<Commit> commits, List<CommitFile> wcFiles){
+    public RepoMagitFile(List<Branch> branches, List<Commit> commits, List<WCFileNode> wcFiles){
         this.branches = branches;
         this.commits = new ArrayList<>();
         for(Commit commit : commits){

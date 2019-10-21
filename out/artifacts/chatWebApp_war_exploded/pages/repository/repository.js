@@ -45,19 +45,51 @@ function showBranchesData(branches){
     }
 }
 
-function showWCFiles(files){
-    var wcFileList = $('#wcFileList');
-    wcFileList.empty();
-    for (var i = 0 ; i < files.length; i++) {
-        var file = files[i];
-        if (!file.type.localeCompare("FILE")) {
-            wcFileList.append("<button type=\"button\" class='list-group-item list-group-item-action'" +
-                " data-toggle=\"modal\" data-target=\"#fileContentModal\" id=" + file.sha1 + ">" +
-                "<h6>" + file.name + "</h6><p>"
-                + file.sha1 + "</p></button>");
+function showWCFiles(files) {
+    $('#files-tree').empty();
+    $('#files-tree').treeview({
+        data: files,
+        onNodeSelected: function (event, data) {
+            if (data.nodes.length > 0) { // folder
+                document.getElementById('addFile').disabled = false;
+            } else // file
+            {
+                document.getElementById('addFile').disabled = true;
+                var request = "reqType=" + GET_FILE_CONTENT + "&fileSha1=" + data.sha1;
+                $.ajax({
+                    url: 'repo',
+                    type: 'GET',
+                    data: request,
+                    error: function (e) {
+                        alert(e.responseText);
+                    },
+                    success: function (response) {
+                        // Add response in Modal body
+                        document.getElementById("content").value = response;
+                        // Display Modal
+                        $('#fileContentModal').find('.modal-header h2').text(data.text);
+                        $('#fileContentModal').find('.pl-4').text(data.sha1);
+                        $('#fileContentModal').modal('show');
+                    }
+                });
+            }
         }
-    }
+    });
 }
+
+// function showWCFiles(files){
+//     var wcFileList = $('#wcFileList');
+//     wcFileList.empty();
+//     for (var i = 0 ; i < files.length; i++) {
+//         var file = files[i];
+//         if (!file.type.localeCompare("FILE")) {
+//             wcFileList.append("<button type=\"button\" class='list-group-item list-group-item-action'" +
+//                 " data-toggle=\"modal\" data-target=\"#fileContentModal\" id=" + file.sha1 + ">" +
+//                 "<h6>" + file.name + "</h6><p>"
+//                 + file.sha1 + "</p></button>");
+//         }
+//     }
+// }
 
 function showCommitFiles(files) {
     var table = document.getElementById("commitFilesTable");
@@ -126,37 +158,37 @@ function showCommits(commits){
     }
 }
 
-$(document).ready(function(){
-    $(document).on('click', '.list-group', function(e) {
-        var sha1;
-        var fileName;
-        if(e.target.nextElementSibling != null) {
-            sha1 = e.target.nextElementSibling.innerHTML;
-            fileName = e.target.innerHTML;
-        }
-        else {
-            sha1 = e.target.innerHTML;
-            fileName = e.target.nextElementSibling.innerHTML;
-        }
-        var data = "reqType=" + GET_FILE_CONTENT + "&fileSha1=" + sha1;
-        $.ajax({
-            url: 'repo',
-            type: 'GET',
-            data: data,
-            error: function (e) {
-                alert(e.responseText);
-            },
-            success: function (response) {
-                // Add response in Modal body
-                document.getElementById("content").value = response;
-                // Display Modal
-                $('#fileContentModal').find('.modal-header h2').text(fileName);
-                $('#fileContentModal').find('.pl-4').text(sha1);
-                $('#fileContentModal').modal('show');
-            }
-        });
-    });
-});
+// $(document).ready(function(){
+//     $(document).on('click', '.list-group', function(e) {
+//         var sha1;
+//         var fileName;
+//         if(e.target.nextElementSibling != null) {
+//             sha1 = e.target.nextElementSibling.innerHTML;
+//             fileName = e.target.innerHTML;
+//         }
+//         else {
+//             sha1 = e.target.innerHTML;
+//             fileName = e.target.nextElementSibling.innerHTML;
+//         }
+//         var data = "reqType=" + GET_FILE_CONTENT + "&fileSha1=" + sha1;
+//         $.ajax({
+//             url: 'repo',
+//             type: 'GET',
+//             data: data,
+//             error: function (e) {
+//                 alert(e.responseText);
+//             },
+//             success: function (response) {
+//                 // Add response in Modal body
+//                 document.getElementById("content").value = response;
+//                 // Display Modal
+//                 $('#fileContentModal').find('.modal-header h2').text(fileName);
+//                 $('#fileContentModal').find('.pl-4').text(sha1);
+//                 $('#fileContentModal').modal('show');
+//             }
+//         });
+//     });
+// });
 
 $(document).on('click', '#editBtn', function (event) {
     event.preventDefault();
@@ -200,8 +232,10 @@ $(document).on('click', '#saveBtn', function (event) {
             alert(e.response);
         },
         success: function (response) {
-            document.getElementById('successAlert').style.visibility = 'visible';
-            $('#successAlert').show();
+            $("#successAlert").show();
+            setTimeout(function(){
+                $("#successAlert").hide();
+            }, 2000);
             $('#fileContentModal').modal('hide');
         }
     });
@@ -231,6 +265,8 @@ $(document).on('click', '#deleteBtn', function (event) {
         });
     }
 });
+
+
 
 
 

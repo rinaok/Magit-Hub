@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import engine.ui.UIManager;
 import logic.manager.Exceptions.FailedToCreateRepositoryException;
 import logic.manager.Repository;
+import logic.manager.WCFileNode;
 import logic.modules.Branch;
 import logic.modules.Commit;
 import server.utils.CommitFile;
@@ -118,7 +119,7 @@ public class RepositoryServlet extends HttpServlet {
 
     private String getRepositoryPageData(){
         List<Branch> branches = uiManager.getBranches();
-        List<CommitFile> wcFiles = new ArrayList<>();
+        List<WCFileNode> wcFiles = new ArrayList<>();
         try {
             wcFiles = getWC();
         } catch (ParserConfigurationException e) {
@@ -133,9 +134,10 @@ public class RepositoryServlet extends HttpServlet {
         return new Gson().toJson(magitFile);
     }
 
-    private List<CommitFile> getWC() throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
+    private List<WCFileNode> getWC() throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
         String headSha1 = uiManager.getHeadCommit().createHashCode();
-        return commitFilesDetails(headSha1);
+//        return commitFilesDetails(headSha1);
+        return uiManager.createFilesTree(headSha1);
     }
 
     private List<CommitFile> commitFilesDetails(String commitSha1){

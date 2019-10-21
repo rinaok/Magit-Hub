@@ -1,14 +1,11 @@
 package engine.ui;
 
-import logic.manager.CommitDelta;
-import logic.manager.Engine;
+import logic.manager.*;
 import logic.manager.Exceptions.FailedToCreateBranchException;
 import logic.manager.Exceptions.FailedToCreateRepositoryException;
 import logic.manager.Exceptions.FailedToMergeException;
 import logic.manager.Exceptions.XmlParseException;
 import logic.manager.Merge.MergeResult;
-import logic.manager.Repository;
-import logic.manager.Utils;
 import logic.manager.XmlHandler.CallableXml;
 import logic.manager.XmlHandler.XmlAdapter;
 import logic.modules.Branch;
@@ -323,5 +320,9 @@ public class UIManager {
         String rootSha1 = systemEngine.getBranchesManager().getActive().getHead().getRootSha1();
         String path = systemEngine.findPath(sha1, rootSha1);
         Utils.deleteFile(path);
+    }
+
+    public List<WCFileNode> createFilesTree(String commitSha1) throws IOException, ParserConfigurationException, FailedToCreateRepositoryException {
+        return systemEngine.createFilesTree(commitSha1);
     }
 }

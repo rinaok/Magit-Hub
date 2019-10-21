@@ -4,88 +4,90 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>MAGit Hub</title>
 	<script src="../../common/jquery-3.4.1.min.js"></script>
-	<script src="../../common/bootstrap.min.js"></script>
 	<script src="../../common/context-path-helper.js"></script>
-	<link rel="stylesheet" href="../../common/bootstrap.min.css">
 	<link rel="stylesheet" href="repository.css">
 	<script src="repository.js"></script>
+    <link href="../../common/bootstrap-treeview.min.css" rel="stylesheet"/>
+    <script src="../../common/bootstrap-treeview.min.js"></script>
+    <script src="../../common/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../common/bootstrap.min.css">
+
 </head>
 <body>
 
 <div class="container">
-    <div class="alert alert-success alert-dismissable" id="successAlert" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        Success! File changes were saved to the server
-    </div>
+<div class="alert alert-success alert-dismissable" id="successAlert" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    Success! File changes were saved to the server
+</div>
 
 </div>
 
 <div class="content">
-	<div class="container-fluid">
-		<h1>MAGit Hub</h1>
-        <ul>
-            <li><a href="">Create Branch</a></li>
-            <li><a href="">Checkout</a></li>
-            <li><a href="#UpdateWC">Update WC</a></li>
-            <li><a href="../../users/logout">Logout</a></li>
-        </ul>
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-9">
-                    <h3>Branches</h3>
-                    <ul class="list-group" id="branchesList">
-					</ul>
-				</div>
-                <div class="col-3">
-                    <div class="form-group">
-                        <input id="createBranch" type="submit" class="btn btn-primary pull-right" value="Create Branch">
-                        <input id=checkout type="submit" class="btn btn-primary pull-right" value="Checkout">
-                    </div>
+<div class="container-fluid">
+    <h1>MAGit Hub</h1>
+    <ul>
+        <li><a href="">Create Branch</a></li>
+        <li><a href="">Checkout</a></li>
+        <li><a href="#UpdateWC">Update WC</a></li>
+        <li><a href="../../users/logout">Logout</a></li>
+    </ul>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-9">
+                <h3>Branches</h3>
+                <ul class="list-group" id="branchesList">
+                </ul>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <input id="createBranch" type="submit" class="btn btn-primary pull-right" value="Create Branch">
+                    <input id=checkout type="submit" class="btn btn-primary pull-right" value="Checkout">
                 </div>
-			</div>
-			<div class="row">
-                <div class="col-9">
-                    <br>
-                    <h3>Head Branch Commits</h3>
-                    <table class="table table-hover" id="commitsTable">
-                        <thead>
-                        <tr>
-                            <th>SHA1</th>
-                            <th>Message</th>
-                            <th>Creation Date</th>
-                            <th>Created By</th>
-                            <th>Branches</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-9">
+                <br>
+                <h3>Head Branch Commits</h3>
+                <table class="table table-hover" id="commitsTable">
+                    <thead>
+                    <tr>
+                        <th>SHA1</th>
+                        <th>Message</th>
+                        <th>Creation Date</th>
+                        <th>Created By</th>
+                        <th>Branches</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-3">
+                <br>
+                <h3>Commit Files</h3>
+                <table class="table table-hover" id="commitFilesTable">
+                    <thead>
+                    <tr>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-3" id="UpdateWC">
+                <br>
+                <h3>Update Working Copy</h3>
+                    <div id="files-tree" class="treeview w-20 border"></div>
                 </div>
-                <div class="col-3">
-                    <br>
-                    <h3>Commit Files</h3>
-                    <table class="table table-hover" id="commitFilesTable">
-                        <thead>
-                        <tr>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-			</div>
-            <br>
-            <div class="row">
-                <div class="col-3" id="UpdateWC">
-                    <br>
-                    <h3>Update Working Copy</h3>
-                    <div class="list-group" id="wcFileList">
-                    </div>
-                </div>
-                <div class="col-3">
+                <div class="col-6">
                     <button type="button" class="btn btn-primary" id="addFile">Add New File</button>
                 </div>
-	    </div>
+            </div>
         </div>
         <!-- WC Files Modal -->
         <div class="modal fade" id="fileContentModal" role="dialog">
