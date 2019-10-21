@@ -21,25 +21,25 @@ public class WCServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         uiManager = ServletUtils.getUIManager(getServletContext());
         String requestType = request.getParameter("reqType");
-        String fileSha1 = request.getParameter("fileSha1");
+        String filePath = request.getParameter("filePath");
         switch (requestType) {
             case EDIT_FILE:
                 String newContent = request.getParameter("content").replaceAll("\\n", "\r\n");
-                String path = uiManager.findFilePath(fileSha1);
+                //String path = uiManager.findFilePath(filePath);
                 try {
-                    uiManager.editFileInServer(path, newContent);
+                    uiManager.editFileInServer(filePath, newContent);
                 } catch (FailedToCreateRepositoryException e) {
                     e.printStackTrace();
                 }
                 break;
             case DELETE_FILE:
-                uiManager.deleteFile(fileSha1);
+                uiManager.deleteFile(filePath);
                 break;
             case NEW_FILE:
                 String content = request.getParameter("fileContent").replaceAll("\\n", "\r\n");
                 String fileName = request.getParameter("fileName");
                 try {
-                    uiManager.addNewFile(fileSha1, fileName, content);
+                    uiManager.addNewFile(filePath, fileName, content);
                 } catch (FailedToCreateRepositoryException e) {
                     e.printStackTrace();
                 }

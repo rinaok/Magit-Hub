@@ -4,12 +4,14 @@ import java.util.List;
 
 public class WCFileNode {
     private String text;
-    private String sha1;
+    private String filePath;
+    private FileStatus status;
     private List<WCFileNode> nodes;
 
-    public WCFileNode(String text, String sha1){
+    public WCFileNode(String text, String filePath){
         this.text = text;
-        this.sha1 = sha1;
+        this.filePath = filePath;
+        status = FileStatus.NO_CHANGE;
         nodes = new ArrayList<>();
     }
 
@@ -19,6 +21,18 @@ public class WCFileNode {
 
     public List<WCFileNode> getNodes(){
         return nodes;
+    }
+
+    public void setFileStatus(FileStatus fileStatus){
+        this.status = fileStatus;
+    }
+
+    public FileStatus getStatus(){
+        return status;
+    }
+
+    public String getFilePath(){
+        return filePath;
     }
 }
 

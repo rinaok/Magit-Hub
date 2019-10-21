@@ -299,8 +299,8 @@ public class UIManager {
         return systemEngine.isLocalRepository();
     }
 
-    public String getFileContent(String sha1){
-        return Engine.getFileContent(sha1);
+    public String getFileContent(String filePath) throws IOException {
+        return Utils.readFile(new File(filePath));
     }
 
     public CommitDelta getCommitDelta(Commit commit) throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
@@ -316,18 +316,15 @@ public class UIManager {
         return systemEngine.findPath(sha1, rootSha1);
     }
 
-    public void deleteFile(String sha1) throws IOException {
-        String rootSha1 = systemEngine.getBranchesManager().getActive().getHead().getRootSha1();
-        String path = systemEngine.findPath(sha1, rootSha1);
+    public void deleteFile(String path) throws IOException {
         Utils.deleteFile(path);
     }
 
-    public List<WCFileNode> createFilesTree(String commitSha1) throws IOException, ParserConfigurationException, FailedToCreateRepositoryException {
-        return systemEngine.createFilesTree(commitSha1);
+    public List<WCFileNode> createFilesTree() throws IOException, ParserConfigurationException, FailedToCreateRepositoryException {
+        return systemEngine.createFilesTree();
     }
 
-    public void addNewFile(String rootSha1, String fileName, String content) throws IOException, FailedToCreateRepositoryException {
-        String path = rootSha1;//findFilePath(rootSha1);
+    public void addNewFile(String path, String fileName, String content) throws IOException, FailedToCreateRepositoryException {
         Utils.writeFile(new File(path + "\\" + fileName + ".txt"), content);
     }
 }

@@ -601,8 +601,8 @@ public class Engine {
         }
     }
 
-    public List<WCFileNode> createFilesTree(String commitSha1) throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
-        String rootSha1 = commitMapSha1.get(commitSha1).getRootSha1();
+    public List<WCFileNode> createFilesTree() throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
+        //String rootSha1 = commitMapSha1.get(commitSha1).getRootSha1();
         List<WCFileNode> tree = new ArrayList<>();
         final List<WCFileNode>[] rootLevel = new List[]{tree};
 //        ActionsOnObjectsInterface actionInterface = (obj, path) ->
@@ -622,18 +622,33 @@ public class Engine {
         return tree;
     }
 
-    private void getWCJSON(Folder rootFolder, final List<WCFileNode>[] rootLevel){
+    private void getWCJSON(Folder rootFolder, final List<WCFileNode>[] rootLevel) throws IOException {
         for(Map.Entry<String, FileData> gitFile : rootFolder.getIncludedFiles().entrySet()){
             String filePath = getFilePathInWC(gitFile.getValue().getName());
             if(filePath != null) {
                 WCFileNode node = new WCFileNode(gitFile.getValue().getName(), filePath);
                 rootLevel[0].add(node);
+                if (gitFile.getValue().getType().toString().equals(FileType.FILE.toString())) {
+                    setFileStatus(node);
+                }
                 if (gitFile.getValue().getType().toString().equals(FileType.DIRECTORY.toString())) {
                     rootLevel[0] = rootLevel[0].get(rootLevel[0].size() - 1).getNodes();
                     getWCJSON((Folder) gitFile.getValue().getFilePointer(), rootLevel);
                 }
             }
         }
+    }
+
+    private void setFileStatus(WCFileNode node) throws IOException {
+        List<String> edited = getEditedFiles();
+        List<String> newFiles = getNewFiles();
+        List<String> deleted = getDeletedFiles();
+        if(edited.contains(node.getFilePath()))
+            node.setFileStatus(FileStatus.MODIFIED);
+        else if(deleted.contains(node.getFilePath()))
+            node.setFileStatus(FileStatus.DELETED);
+        else if(newFiles.contains(node.getFilePath()))
+            node.setFileStatus(FileStatus.NEW);
     }
 
     private String getFilePathInWC(String fileName){

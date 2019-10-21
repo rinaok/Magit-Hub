@@ -1,14 +1,18 @@
+var REFRESH_WC = 0;
 var GET_PAGE_DATA = 1;
 var GET_COMMIT_FILES = 2;
 var GET_FILE_CONTENT = 3;
 
 var EDIT_FILE = 4;
 var DELETE_FILE = 5;
-var NEW_FILE =6;
+var NEW_FILE = 6;
+
+var NEW_FILE = "NEW";
+var EDITED_FILE = "MODIFIED";
+var DELETED_FILE = "DELETED";
 
 $(function() { // onload...do
-    document.getElementById('addFileBtn').disabled = true;
-    $('#addFileModal').find('.modal-header h8').style.visibility = 'hidden';
+    $('#addFileModal').find('.modal-header h8').hide();
     $("#successAlert").hide();
     var data = "reqType="+ GET_PAGE_DATA;
     $.ajax({
@@ -53,12 +57,12 @@ function showWCFiles(files) {
         data: files,
         onNodeSelected: function (event, data) {
             if (data.nodes.length > 0) { // folder
-                document.getElementById('addFileBtn').disabled = false;
-                $('#addFileModal').find('.modal-header h8').text(data.sha1);
+                $('#addFileModal').find('.modal-header h8').text(data.filePath);
             } else // file
             {
-                document.getElementById('addFileBtn').disabled = true;
-                var request = "reqType=" + GET_FILE_CONTENT + "&fileSha1=" + data.sha1;
+                var filePath = data.filePath;
+                filePath = filePath.replace(/\\/g,"//");
+                var request = "reqType=" + GET_FILE_CONTENT + "&filePath=" + filePath;
                 $.ajax({
                     url: 'repo',
                     type: 'GET',
@@ -71,7 +75,7 @@ function showWCFiles(files) {
                         document.getElementById("content").value = response;
                         // Display Modal
                         $('#fileContentModal').find('.modal-header h2').text(data.text);
-                        $('#fileContentModal').find('.pl-4').text(data.sha1);
+                        $('#fileContentModal').find('.pl-4').text(data.filePath);
                         $('#fileContentModal').modal('show');
                     }
                 });
@@ -178,8 +182,9 @@ $(document).on('click', '#saveBtn', function (event) {
     document.getElementById('saveBtn').style.visibility = 'hidden';
     document.getElementById('cancelBtn').style.visibility = 'hidden';
     document.getElementById("editBtn").disabled = false;
-    var sha1 = $('#fileContentModal').find('.pl-4')[0].innerHTML;
-    var fileData = "reqType=" + EDIT_FILE + "&fileSha1=" + sha1 + "&content=" + $("#content").val();
+    var path = $('#fileContentModal').find('.pl-4')[0].innerHTML;
+    path = path.replace(/\\/g,"//");
+    var fileData = "reqType=" + EDIT_FILE + "&filePath=" + path + "&content=" + $("#content").val();
     $.ajax({
         url: 'wc',
         type: 'POST',
@@ -202,8 +207,9 @@ $(document).on('click', '#deleteBtn', function (event) {
     var $modal = $('#fileContentModal');
     var result = confirm("Are you sure you want to delete this file?");
     if(result){
-        var sha1 = $('#fileContentModal').find('.pl-4')[0].innerHTML;
-        var fileData = "reqType=" + DELETE_FILE + "&fileSha1=" + sha1;
+        var path = $('#fileContentModal').find('.pl-4')[0].innerHTML;
+        path = path.replace(/\\/g,"//");
+        var fileData = "reqType=" + DELETE_FILE + "&filePath=" + path;
         $.ajax({
             url: 'wc',
             type: 'POST',
@@ -217,6 +223,7 @@ $(document).on('click', '#deleteBtn', function (event) {
                     $("#successAlert").hide();
                 }, 2000);
                 $('#fileContentModal').modal('hide');
+                refreshWC();
             }
         });
     }
@@ -229,11 +236,27 @@ $(document).on('click', '#addFileBtn', function (event) {
     $('#addFileModal').modal('show');
 });
 
+function refreshWC(){
+    var req = "reqType=" + REFRESH_WC;
+    $.ajax({
+        url: 'repo',
+        type: 'GET',
+        data: req,
+        error: function (e) {
+            alert(e.response);
+        },
+        success: function (response) {
+            showWCFiles(response);
+        }
+    });
+}
+
 $(document).on('click', '#submitBtn', function (event) {
-    var rootSha1 = $('#addFileModal').find('.modal-header h8').text();
-    var content = $("#fileContent").val()
-    var fileName = $("#fileName").val()
-    var fileData = "reqType=" + NEW_FILE + "&fileName=" + fileName + "&fileContent=" + content + "&fileSha1=" + rootSha1;
+    var filePath = $('#addFileModal').find('.modal-header h8').text();
+    filePath = filePath.replace(/\\/g,"//");
+    var content = $("#fileContent").val();
+    var fileName = $("#fileName").val();
+    var fileData = "reqType=" + NEW_FILE + "&fileName=" + fileName + "&fileContent=" + content + "&filePath=" + filePath;
     $.ajax({
         url: 'wc',
         type: 'POST',
@@ -247,6 +270,7 @@ $(document).on('click', '#submitBtn', function (event) {
                 $("#successAlert").hide();
             }, 2000);
             $('#addFileModal').modal('hide');
+            refreshWC();
         }
     });
 });

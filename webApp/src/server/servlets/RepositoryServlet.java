@@ -27,6 +27,7 @@ import java.util.Map;
 @WebServlet(name = "RepositoryServlet", urlPatterns = {"/pages/users/repo", "/pages/repository/repo"})
 public class RepositoryServlet extends HttpServlet {
 
+    private static final String REFRESH_WC = "0";
     private static final String GET_REPOSITORY_PAGE_DATA = "1";
     private static final String GET_REPOSITORY_PAGE_COMMIT_FILES = "2";
     private static final String GET_FILE_CONTENT = "3";
@@ -72,11 +73,24 @@ public class RepositoryServlet extends HttpServlet {
                 }
                 break;
             case GET_FILE_CONTENT:
-                String fileSha1 = request.getParameter("fileSha1");
-                String contentJson = new Gson().toJson(uiManager.getFileContent(fileSha1));
+                String filePath = request.getParameter("filePath");
+                String contentJson = new Gson().toJson(uiManager.getFileContent(filePath));
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(contentJson);
+                break;
+            case REFRESH_WC:
+                try {
+                    List<WCFileNode> wcFiles = getWC();
+                    String wcJSON = new Gson().toJson(wcFiles);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write(wcJSON);
+                } catch (ParserConfigurationException e) {
+                    e.printStackTrace();
+                } catch (FailedToCreateRepositoryException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
@@ -135,9 +149,7 @@ public class RepositoryServlet extends HttpServlet {
     }
 
     private List<WCFileNode> getWC() throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
-        String headSha1 = uiManager.getHeadCommit().createHashCode();
-//        return commitFilesDetails(headSha1);
-        return uiManager.createFilesTree(headSha1);
+        return uiManager.createFilesTree();
     }
 
     private List<CommitFile> commitFilesDetails(String commitSha1){
