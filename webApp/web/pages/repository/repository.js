@@ -7,6 +7,8 @@ var DELETE_FILE = 5;
 var NEW_FILE =6;
 
 $(function() { // onload...do
+    document.getElementById('addFileBtn').disabled = true;
+    $('#addFileModal').find('.modal-header h8').style.visibility = 'hidden';
     $("#successAlert").hide();
     var data = "reqType="+ GET_PAGE_DATA;
     $.ajax({
@@ -51,10 +53,11 @@ function showWCFiles(files) {
         data: files,
         onNodeSelected: function (event, data) {
             if (data.nodes.length > 0) { // folder
-                document.getElementById('addFile').disabled = false;
+                document.getElementById('addFileBtn').disabled = false;
+                $('#addFileModal').find('.modal-header h8').text(data.sha1);
             } else // file
             {
-                document.getElementById('addFile').disabled = true;
+                document.getElementById('addFileBtn').disabled = true;
                 var request = "reqType=" + GET_FILE_CONTENT + "&fileSha1=" + data.sha1;
                 $.ajax({
                     url: 'repo',
@@ -171,7 +174,6 @@ $(document).on('click', '#cancelBtn', function (event) {
 
 $(document).on('click', '#saveBtn', function (event) {
     event.preventDefault();
-    var $modal = $('#fileContentModal');
     $("#content").attr("readonly", true);
     document.getElementById('saveBtn').style.visibility = 'hidden';
     document.getElementById('cancelBtn').style.visibility = 'hidden';
@@ -220,7 +222,34 @@ $(document).on('click', '#deleteBtn', function (event) {
     }
 });
 
+$(document).on('click', '#addFileBtn', function (event) {
+    event.preventDefault();
+    $('#fileContent').text("");
+    $('#fileName').text("");
+    $('#addFileModal').modal('show');
+});
 
+$(document).on('click', '#submitBtn', function (event) {
+    var rootSha1 = $('#addFileModal').find('.modal-header h8').text();
+    var content = $("#fileContent").val()
+    var fileName = $("#fileName").val()
+    var fileData = "reqType=" + NEW_FILE + "&fileName=" + fileName + "&fileContent=" + content + "&fileSha1=" + rootSha1;
+    $.ajax({
+        url: 'wc',
+        type: 'POST',
+        data: fileData,
+        error: function (e) {
+            alert(e.response);
+        },
+        success: function (response) {
+            $("#successAlert").show();
+            setTimeout(function(){
+                $("#successAlert").hide();
+            }, 2000);
+            $('#addFileModal').modal('hide');
+        }
+    });
+});
 
 
 

@@ -7,6 +7,7 @@ var DELETE_FILE = 5;
 var NEW_FILE =6;
 
 $(function() { // onload...do
+    document.getElementById('addFileBtn').disabled = true;
     $("#successAlert").hide();
     var data = "reqType="+ GET_PAGE_DATA;
     $.ajax({
@@ -51,10 +52,11 @@ function showWCFiles(files) {
         data: files,
         onNodeSelected: function (event, data) {
             if (data.nodes.length > 0) { // folder
-                document.getElementById('addFile').disabled = false;
+                document.getElementById('addFileBtn').disabled = false;
+                $('#addFileModal').find('.modal-header h8').text(data.sha1);
             } else // file
             {
-                document.getElementById('addFile').disabled = true;
+                document.getElementById('addFileBtn').disabled = true;
                 var request = "reqType=" + GET_FILE_CONTENT + "&fileSha1=" + data.sha1;
                 $.ajax({
                     url: 'repo',
@@ -76,20 +78,6 @@ function showWCFiles(files) {
         }
     });
 }
-
-// function showWCFiles(files){
-//     var wcFileList = $('#wcFileList');
-//     wcFileList.empty();
-//     for (var i = 0 ; i < files.length; i++) {
-//         var file = files[i];
-//         if (!file.type.localeCompare("FILE")) {
-//             wcFileList.append("<button type=\"button\" class='list-group-item list-group-item-action'" +
-//                 " data-toggle=\"modal\" data-target=\"#fileContentModal\" id=" + file.sha1 + ">" +
-//                 "<h6>" + file.name + "</h6><p>"
-//                 + file.sha1 + "</p></button>");
-//         }
-//     }
-// }
 
 function showCommitFiles(files) {
     var table = document.getElementById("commitFilesTable");
@@ -158,38 +146,6 @@ function showCommits(commits){
     }
 }
 
-// $(document).ready(function(){
-//     $(document).on('click', '.list-group', function(e) {
-//         var sha1;
-//         var fileName;
-//         if(e.target.nextElementSibling != null) {
-//             sha1 = e.target.nextElementSibling.innerHTML;
-//             fileName = e.target.innerHTML;
-//         }
-//         else {
-//             sha1 = e.target.innerHTML;
-//             fileName = e.target.nextElementSibling.innerHTML;
-//         }
-//         var data = "reqType=" + GET_FILE_CONTENT + "&fileSha1=" + sha1;
-//         $.ajax({
-//             url: 'repo',
-//             type: 'GET',
-//             data: data,
-//             error: function (e) {
-//                 alert(e.responseText);
-//             },
-//             success: function (response) {
-//                 // Add response in Modal body
-//                 document.getElementById("content").value = response;
-//                 // Display Modal
-//                 $('#fileContentModal').find('.modal-header h2').text(fileName);
-//                 $('#fileContentModal').find('.pl-4').text(sha1);
-//                 $('#fileContentModal').modal('show');
-//             }
-//         });
-//     });
-// });
-
 $(document).on('click', '#editBtn', function (event) {
     event.preventDefault();
     var $modal = $('#fileContentModal');
@@ -217,7 +173,6 @@ $(document).on('click', '#cancelBtn', function (event) {
 
 $(document).on('click', '#saveBtn', function (event) {
     event.preventDefault();
-    var $modal = $('#fileContentModal');
     $("#content").attr("readonly", true);
     document.getElementById('saveBtn').style.visibility = 'hidden';
     document.getElementById('cancelBtn').style.visibility = 'hidden';
@@ -266,7 +221,34 @@ $(document).on('click', '#deleteBtn', function (event) {
     }
 });
 
+$(document).on('click', '#addFileBtn', function (event) {
+    event.preventDefault();
+    $('#fileContent').text("");
+    $('#fileName').text("");
+    $('#addFileModal').modal('show');
+});
 
+$(document).on('click', '#submitBtn', function (event) {
+    var rootSha1 = $('#addFileModal').find('.modal-header h8').text();
+    var content = $("#fileContent").val()
+    var fileName = $("#fileName").val()
+    var fileData = "reqType=" + NEW_FILE + "&fileName=" + fileName + "&fileContent=" + content + "&fileSha1=" + rootSha1;
+    $.ajax({
+        url: 'wc',
+        type: 'POST',
+        data: fileData,
+        error: function (e) {
+            alert(e.response);
+        },
+        success: function (response) {
+            $("#successAlert").show();
+            setTimeout(function(){
+                $("#successAlert").hide();
+            }, 2000);
+            $('#addFileModal').modal('hide');
+        }
+    });
+});
 
 
 

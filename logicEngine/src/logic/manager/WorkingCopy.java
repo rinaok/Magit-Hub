@@ -14,6 +14,10 @@ public class WorkingCopy {
         this.rootFolder = new FileData(root, username, rootFolder);
     }
 
+    public Set<String> getWcFiles(){
+        return wcFiles;
+    }
+
     public String getRootFolderSha1() { return rootFolder.getFilePointer().createHashCode(); }
 
     public Folder getRootFolder(){

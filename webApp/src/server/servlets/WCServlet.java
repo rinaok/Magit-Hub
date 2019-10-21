@@ -36,6 +36,13 @@ public class WCServlet extends HttpServlet {
                 uiManager.deleteFile(fileSha1);
                 break;
             case NEW_FILE:
+                String content = request.getParameter("fileContent").replaceAll("\\n", "\r\n");
+                String fileName = request.getParameter("fileName");
+                try {
+                    uiManager.addNewFile(fileSha1, fileName, content);
+                } catch (FailedToCreateRepositoryException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }

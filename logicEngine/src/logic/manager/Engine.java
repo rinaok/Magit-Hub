@@ -10,8 +10,10 @@ import logic.modules.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.list.TreeList;
 import org.apache.commons.io.FilenameUtils;
+
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -603,17 +605,46 @@ public class Engine {
         String rootSha1 = commitMapSha1.get(commitSha1).getRootSha1();
         List<WCFileNode> tree = new ArrayList<>();
         final List<WCFileNode>[] rootLevel = new List[]{tree};
-        ActionsOnObjectsInterface actionInterface = (obj, path) ->
-        {
-            WCFileNode node = new WCFileNode(obj[fileNameIndex], obj[sha1Index]);
-            rootLevel[0].add(node);
-            if(obj[fileTypeIndex].equals(FileType.DIRECTORY.toString())){
-                rootLevel[0] = rootLevel[0].get(rootLevel[0].size() - 1).getNodes();
-            }
-        };
-
-        recursiveRunOverObjectFiles(rootSha1, magitRepo + "\\" + Environment.OBJECTS, actionInterface, magitRepo + "\\" + Environment.OBJECTS, magitRepo + "\\" + Environment.OBJECTS);
+//        ActionsOnObjectsInterface actionInterface = (obj, path) ->
+//        {
+//            WCFileNode node = new WCFileNode(obj[fileNameIndex], obj[sha1Index]);
+//            rootLevel[0].add(node);
+//            if(obj[fileTypeIndex].equals(FileType.DIRECTORY.toString())){
+//                rootLevel[0] = rootLevel[0].get(rootLevel[0].size() - 1).getNodes();
+//            }
+//        };
+//
+//        recursiveRunOverObjectFiles(rootSha1, magitRepo + "\\" + Environment.OBJECTS, actionInterface, magitRepo + "\\" + Environment.OBJECTS, magitRepo + "\\" + Environment.OBJECTS);
+//        return tree;
+        repositoriesManager.getActive().getWorkingCopy().initRootFolder(wcRootPath, username);
+        WorkingCopy wc = repositoriesManager.getActive().getWorkingCopy();
+        getWCJSON(wc.getRootFolder(), rootLevel);
         return tree;
+    }
+
+    private void getWCJSON(Folder rootFolder, final List<WCFileNode>[] rootLevel){
+        for(Map.Entry<String, FileData> gitFile : rootFolder.getIncludedFiles().entrySet()){
+            String filePath = getFilePathInWC(gitFile.getValue().getName());
+            if(filePath != null) {
+                WCFileNode node = new WCFileNode(gitFile.getValue().getName(), filePath);
+                rootLevel[0].add(node);
+                if (gitFile.getValue().getType().toString().equals(FileType.DIRECTORY.toString())) {
+                    rootLevel[0] = rootLevel[0].get(rootLevel[0].size() - 1).getNodes();
+                    getWCJSON((Folder) gitFile.getValue().getFilePointer(), rootLevel);
+                }
+            }
+        }
+    }
+
+    private String getFilePathInWC(String fileName){
+        WorkingCopy wc = repositoriesManager.getActive().getWorkingCopy();
+        for(String path : wc.getWcFiles()){
+            File f = new File(path);
+            String name = f.getName();
+            if(name.equals(fileName))
+                return path;
+        }
+        return null;
     }
 
     public  List<Map<String, String>> commitFilesDetails (String commitSha1) throws FailedToCreateRepositoryException, IOException, ParserConfigurationException {

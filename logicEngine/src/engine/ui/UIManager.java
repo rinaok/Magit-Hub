@@ -325,4 +325,9 @@ public class UIManager {
     public List<WCFileNode> createFilesTree(String commitSha1) throws IOException, ParserConfigurationException, FailedToCreateRepositoryException {
         return systemEngine.createFilesTree(commitSha1);
     }
+
+    public void addNewFile(String rootSha1, String fileName, String content) throws IOException, FailedToCreateRepositoryException {
+        String path = rootSha1;//findFilePath(rootSha1);
+        Utils.writeFile(new File(path + "\\" + fileName + ".txt"), content);
+    }
 }
