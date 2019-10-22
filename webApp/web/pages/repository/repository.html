@@ -17,7 +17,7 @@
 
 <div class="container">
 <div class="alert alert-success alert-dismissable" id="successAlert" role="alert">
-    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
     Success! File changes were saved to the server
 </div>
 
@@ -82,13 +82,25 @@
             <div class="col-3" id="UpdateWC">
                 <br>
                 <h3>Working Copy Area</h3>
+                <h5>Last Commit Files</h5>
                     <div id="files-tree" class="treeview w-20 border"></div>
                 </div>
                 <div class="col-3">
                     <button type="button" class="btn btn-primary" id="addFileBtn">Add New File</button>
                 </div>
             <div class="col-3">
-                <button type="button" class="btn btn-primary" id="CommitBtn">Commit</button>
+                <div class="card" style="width: 40rem;" id="openChangesCard">
+                    <h5 class="card-header">WC Open Changes</h5>
+                    <div class="card-body">
+                        <h5 class="card-title" id="newFilesTitle">New Files</h5>
+                        <ul class="list-group list-group-flush" id="newFilesList"></ul><br>
+                        <h5 class="card-title" id="modifiedFilesTitle">Modified Files</h5>
+                        <ul class="list-group list-group-flush" id="modifiedFilesList"></ul><br>
+                        <h5 class="card-title" id="deletedFilesTitle">Deleted Files</h5>
+                        <ul class="list-group list-group-flush" id="deletedFilesList"></ul><br>
+                        <button type="button" class="btn btn-primary" id="commitBtn">Commit</button>
+                    </div>
+                </div>
             </div>
         </div>
         </div>

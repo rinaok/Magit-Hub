@@ -1,5 +1,4 @@
 package server.utils;
-
 import server.constants.Constants;
 
 import javax.servlet.http.HttpServletRequest;

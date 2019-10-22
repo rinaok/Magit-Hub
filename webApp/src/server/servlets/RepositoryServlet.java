@@ -7,10 +7,8 @@ import logic.manager.Repository;
 import logic.manager.WCFileNode;
 import logic.modules.Branch;
 import logic.modules.Commit;
-import server.utils.CommitFile;
-import server.utils.RepoMagitFile;
-import server.utils.ServletUtils;
-import server.utils.SessionUtils;
+import server.utils.*;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -31,6 +29,8 @@ public class RepositoryServlet extends HttpServlet {
     private static final String GET_REPOSITORY_PAGE_DATA = "1";
     private static final String GET_REPOSITORY_PAGE_COMMIT_FILES = "2";
     private static final String GET_FILE_CONTENT = "3";
+    private static final String GET_OPEN_CHANGES = "4";
+
     private UIManager uiManager;
     private Repository currRepo;
 
@@ -57,42 +57,48 @@ public class RepositoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String reqType=request.getParameter("reqType");
             switch (reqType) {
-            case GET_REPOSITORY_PAGE_DATA:
-                String json = getRepositoryPageData();
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(json);
-                break;
-            case GET_REPOSITORY_PAGE_COMMIT_FILES:
-                String commitSha1 = request.getParameter("commitSha1");
-                String filesJson = new Gson().toJson(commitFilesDetails(commitSha1));
-                if (filesJson != null) {
+                case GET_REPOSITORY_PAGE_DATA:
+                    String json = getRepositoryPageData();
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(filesJson);
-                }
-                break;
-            case GET_FILE_CONTENT:
-                String filePath = request.getParameter("filePath");
-                String contentJson = new Gson().toJson(uiManager.getFileContent(filePath));
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(contentJson);
-                break;
-            case REFRESH_WC:
-                try {
-                    List<WCFileNode> wcFiles = getWC();
-                    String wcJSON = new Gson().toJson(wcFiles);
+                    response.getWriter().write(json);
+                    break;
+                case GET_REPOSITORY_PAGE_COMMIT_FILES:
+                    String commitSha1 = request.getParameter("commitSha1");
+                    String filesJson = new Gson().toJson(commitFilesDetails(commitSha1));
+                    if (filesJson != null) {
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().write(filesJson);
+                    }
+                    break;
+                case GET_FILE_CONTENT:
+                    String filePath = request.getParameter("filePath");
+                    String contentJson = new Gson().toJson(uiManager.getFileContent(filePath));
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(wcJSON);
-                } catch (ParserConfigurationException e) {
-                    e.printStackTrace();
-                } catch (FailedToCreateRepositoryException e) {
-                    e.printStackTrace();
-                }
-                break;
-        }
+                    response.getWriter().write(contentJson);
+                    break;
+                case REFRESH_WC:
+                    try {
+                        List<WCFileNode> wcFiles = getWC();
+                        String wcJSON = new Gson().toJson(wcFiles);
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().write(wcJSON);
+                    } catch (ParserConfigurationException e) {
+                        e.printStackTrace();
+                    } catch (FailedToCreateRepositoryException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case GET_OPEN_CHANGES:
+                    String toJSON = new Gson().toJson(getOpenChanges());
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write(toJSON);
+                    break;
+            }
     }
 
     /**
@@ -169,6 +175,14 @@ public class RepositoryServlet extends HttpServlet {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private OpenChanges getOpenChanges() throws IOException {
+        OpenChanges openChanges = new OpenChanges(
+                uiManager.getNewFiles(),
+                uiManager.getDeletedFiles(),
+                uiManager.getModifieddFiles());
+        return openChanges;
     }
 
 }

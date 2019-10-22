@@ -602,23 +602,26 @@ public class Engine {
     }
 
     public List<WCFileNode> createFilesTree() throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
-        //String rootSha1 = commitMapSha1.get(commitSha1).getRootSha1();
+        String commitSha1 = branchesManager.getActive().getHead().createHashCode();
+        String rootSha1 = commitMapSha1.get(commitSha1).getRootSha1();
         List<WCFileNode> tree = new ArrayList<>();
         final List<WCFileNode>[] rootLevel = new List[]{tree};
-//        ActionsOnObjectsInterface actionInterface = (obj, path) ->
-//        {
-//            WCFileNode node = new WCFileNode(obj[fileNameIndex], obj[sha1Index]);
-//            rootLevel[0].add(node);
-//            if(obj[fileTypeIndex].equals(FileType.DIRECTORY.toString())){
-//                rootLevel[0] = rootLevel[0].get(rootLevel[0].size() - 1).getNodes();
-//            }
-//        };
-//
-//        recursiveRunOverObjectFiles(rootSha1, magitRepo + "\\" + Environment.OBJECTS, actionInterface, magitRepo + "\\" + Environment.OBJECTS, magitRepo + "\\" + Environment.OBJECTS);
-//        return tree;
-        repositoriesManager.getActive().getWorkingCopy().initRootFolder(wcRootPath, username);
+        tree.add(new WCFileNode(repositoriesManager.getActive().getName(), repositoriesManager.getActive().getPath()));
+        rootLevel[0] = tree.get(0).getNodes();
+        ActionsOnObjectsInterface actionInterface = (obj, path) ->
+        {
+            WCFileNode node = new WCFileNode(obj[fileNameIndex], findPath(obj[sha1Index], rootSha1));
+            rootLevel[0].add(node);
+            setFileStatus(node);
+            if(obj[fileTypeIndex].equals(FileType.DIRECTORY.toString())){
+                rootLevel[0] = rootLevel[0].get(rootLevel[0].size() - 1).getNodes();
+            }
+        };
+
+        recursiveRunOverObjectFiles(rootSha1, magitRepo + "\\" + Environment.OBJECTS, actionInterface, magitRepo + "\\" + Environment.OBJECTS, magitRepo + "\\" + Environment.OBJECTS);
+        /*repositoriesManager.getActive().getWorkingCopy().initRootFolder(wcRootPath, username);
         WorkingCopy wc = repositoriesManager.getActive().getWorkingCopy();
-        getWCJSON(wc.getRootFolder(), rootLevel);
+        getWCJSON(wc.getRootFolder(), rootLevel);*/
         return tree;
     }
 

@@ -65,9 +65,7 @@ public class UIManager {
                 String deleted = String.join("\r\n", deletedFiles);
                 String edited = String.join("\r\n", editedFiles);
                 String newCreated = String.join("\r\n", newFiles);
-                return "Repository is under: " + repoPath + "\r\n" +
-                        "Username: " + username + "\r\n\r\n" +
-                        "Modified Files:\r\n" + edited + "\r\n\r\n" +
+                return "Modified Files:\r\n" + edited + "\r\n\r\n" +
                         "New Files:\r\n" + newCreated + "\r\n\r\n" +
                         "Removed Files:\r\n" + deleted + "\r\n\r\n";
             }
@@ -326,5 +324,17 @@ public class UIManager {
 
     public void addNewFile(String path, String fileName, String content) throws IOException, FailedToCreateRepositoryException {
         Utils.writeFile(new File(path + "\\" + fileName + ".txt"), content);
+    }
+
+    public List<String> getDeletedFiles() throws IOException {
+        return systemEngine.getDeletedFiles();
+    }
+
+    public List<String> getNewFiles() throws IOException {
+        return systemEngine.getNewFiles();
+    }
+
+    public List<String> getModifieddFiles() throws IOException {
+        return systemEngine.getEditedFiles();
     }
 }

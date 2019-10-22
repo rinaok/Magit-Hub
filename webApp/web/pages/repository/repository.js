@@ -2,12 +2,14 @@ var REFRESH_WC = 0;
 var GET_PAGE_DATA = 1;
 var GET_COMMIT_FILES = 2;
 var GET_FILE_CONTENT = 3;
+var GET_OPEN_CHANGES = 4;
 
 var EDIT_FILE = 4;
 var DELETE_FILE = 5;
 var NEW_FILE = 6;
+var COMMIT = 7;
 
-var NEW_FILE = "NEW";
+var ADDED_FILE = "NEW";
 var EDITED_FILE = "MODIFIED";
 var DELETED_FILE = "DELETED";
 
@@ -31,9 +33,38 @@ $(function() { // onload...do
             showBranchesData(branches);
             showCommits(commits);
             showWCFiles(wc);
+            showOpenChanges();
         }
     })
 });
+
+function showOpenChanges(){
+    var data = "reqType=" + GET_OPEN_CHANGES;
+    $.ajax({
+        method: 'GET',
+        data: data,
+        url: "repo",
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (changes) {
+            $('#openChangesCard').find('.card-text').text(changes);
+            showFiles(changes.newFiles, $('#newFilesList'));
+            showFiles(changes.deletedFiles, $('#deletedFilesList'));
+            showFiles(changes.modifiedFiles, $('#modifiedFilesList'));
+        }
+    });
+}
+
+function showFiles(files, list) {
+    list.empty();
+    for (var i = 0; i < files.length; i++) {
+        list.append("<li class='list-group-item'>" + files[i] + "</li>");
+    }
+}
 
 function showBranchesData(branches){
     var branchesList = $('#branchesList');
@@ -55,11 +86,15 @@ function showWCFiles(files) {
     $('#files-tree').empty();
     $('#files-tree').treeview({
         data: files,
+        showTags: true,
+        levels: 20,
         onNodeSelected: function (event, data) {
             if (data.nodes.length > 0) { // folder
                 $('#addFileModal').find('.modal-header h8').text(data.filePath);
+                document.getElementById("addFileBtn").disabled = false;
             } else // file
             {
+                document.getElementById("addFileBtn").disabled = true;
                 var filePath = data.filePath;
                 filePath = filePath.replace(/\\/g,"//");
                 var request = "reqType=" + GET_FILE_CONTENT + "&filePath=" + filePath;
@@ -198,6 +233,7 @@ $(document).on('click', '#saveBtn', function (event) {
                 $("#successAlert").hide();
             }, 2000);
             $('#fileContentModal').modal('hide');
+            showOpenChanges();
         }
     });
 });
@@ -223,17 +259,23 @@ $(document).on('click', '#deleteBtn', function (event) {
                     $("#successAlert").hide();
                 }, 2000);
                 $('#fileContentModal').modal('hide');
-                refreshWC();
+                showOpenChanges();
             }
         });
     }
 });
 
 $(document).on('click', '#addFileBtn', function (event) {
-    event.preventDefault();
-    $('#fileContent').text("");
-    $('#fileName').text("");
-    $('#addFileModal').modal('show');
+    var filePath = $('#addFileModal').find('.modal-header h8').text();
+    if(filePath.localeCompare("")) {
+        event.preventDefault();
+        $('#fileContent').val("");
+        $('#fileName').val("");
+        $('#addFileModal').modal('show');
+    }
+    else{
+        alert("Please choose a folder to add the file into");
+    }
 });
 
 function refreshWC(){
@@ -270,10 +312,31 @@ $(document).on('click', '#submitBtn', function (event) {
                 $("#successAlert").hide();
             }, 2000);
             $('#addFileModal').modal('hide');
-            refreshWC();
+            showOpenChanges();
         }
     });
 });
 
-
-
+$(document).on('click', '#commitBtn', function (event) {
+    var msg = prompt("Please enter a commit message:");
+    if (msg != null && msg != "") {
+        var data = "reqType=" + COMMIT + "&msg=" + msg;
+        $.ajax({
+            url: 'wc',
+            type: 'POST',
+            data: data,
+            error: function (e) {
+                alert(e.response);
+            },
+            success: function (response) {
+                $("#successAlert").show();
+                setTimeout(function () {
+                    $("#successAlert").hide();
+                }, 2000);
+                $('#addFileModal').modal('hide');
+                showOpenChanges();
+                refreshWC();
+            }
+        });
+    }
+});
