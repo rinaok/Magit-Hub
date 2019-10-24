@@ -196,8 +196,10 @@ function getRepositoryByName(username) {
         },
         success: function (r) {
             $('#repositoriesTable tbody').empty();
-            for (var i = 0 ; i < r.length; i++) {
-                updateRepositoriesTable(JSON.parse(r[i]), username);
+            if(r != null) {
+                for (var i = 0; i < r.length; i++) {
+                    updateRepositoriesTable(JSON.parse(r[i]), username);
+                }
             }
         }
     });
@@ -240,7 +242,7 @@ function fork(repoOwner, repoName){
             insertForkedRepositoryToList();
             $.ajax({
                 method: 'POST',
-                data: repoName,
+                data: repoName + "&" + document.getElementById('activeUser').innerHTML,
                 url: "repo",
                 processData: false, // Don't process the files
                 contentType: false, // Set content type to false as jQuery will tell the server its a query string request
@@ -277,7 +279,7 @@ function updateRepositoriesTable(r){
                         var repoName = e.currentTarget.firstChild.innerText;
                         $.ajax({
                             method: 'POST',
-                            data: repoName,
+                            data: repoName + "&" + owner,
                             url: "repo",
                             processData: false, // Don't process the files
                             contentType: false, // Set content type to false as jQuery will tell the server its a query string request

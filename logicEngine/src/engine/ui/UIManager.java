@@ -251,8 +251,8 @@ public class UIManager {
         String commit = systemEngine.commitOpenChanges(msg, branchName);
     }
 
-    public Repository getRepositoryByName(String name){
-        return systemEngine.getRepositoryByName(name);
+    public Repository getRepositoryByPath(String path){
+        return systemEngine.getRepositoryByPath(path);
     }
 
     public String getRepositoryName(){

@@ -12,6 +12,7 @@ public class UserManager {
 
     private final Set<String> onlineUsers;
     private final Set<String> allUsers;
+
     public UserManager() {
         onlineUsers = new HashSet<>();
         allUsers = new HashSet<>();
@@ -39,4 +40,5 @@ public class UserManager {
     public boolean isUserExists(String username) {
         return onlineUsers.contains(username);
     }
+
 }

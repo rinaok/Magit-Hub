@@ -5,54 +5,53 @@ import java.util.Map;
 
 public class RepositoryManager implements ManagerInterface<Repository> {
 
-    private Map<String, Repository> nameToRepositoryMap;
-    private Map<String, String> pathToName;
+    //private Map<String, Repository> nameToRepositoryMap;
+    private Map<String, Repository> pathToRepositoryMap;
+    //private Map<String, String> pathToName;
     private String activeRepository;
 
     public RepositoryManager(){
-        nameToRepositoryMap = new HashMap<>();
-        pathToName = new HashMap<>();
+        pathToRepositoryMap = new HashMap<>();
+        //pathToName = new HashMap<>();
     }
 
-    public Repository getRepository(String name){
-        if(nameToRepositoryMap.containsKey(name))
-            return nameToRepositoryMap.get(name);
+    public Repository getRepository(String path){
+        if(pathToRepositoryMap.containsKey(path.toLowerCase()))
+            return pathToRepositoryMap.get(path.toLowerCase());
         return null;
     }
 
     @Override
     public Repository getActive() {
-        if(activeRepository != null && nameToRepositoryMap.containsKey(activeRepository)){
-            return nameToRepositoryMap.get(activeRepository);
+        if(activeRepository != null && pathToRepositoryMap.containsKey(activeRepository.toLowerCase())){
+            return pathToRepositoryMap.get(activeRepository.toLowerCase());
         }
         return null;
     }
 
     @Override
     public void setActive(Repository newActive) {
-        activeRepository = newActive.getName();
-        if(!pathToName.containsKey(newActive.getPath())){
-            nameToRepositoryMap.put(newActive.getName(), newActive);
-            pathToName.put(newActive.getPath().toLowerCase(), newActive.getName());
+        activeRepository = newActive.getPath();
+        if(!pathToRepositoryMap.containsKey(newActive.getPath().toLowerCase())){
+            pathToRepositoryMap.put(newActive.getPath().toLowerCase(), newActive);
         }
     }
 
     @Override
     public void addItem(Repository item) {
-        pathToName.put(item.getPath().toLowerCase(), item.getName());
-        nameToRepositoryMap.put(item.getName(), item);
+        //pathToName.put(item.getPath().toLowerCase(), item.getName());
+        pathToRepositoryMap.put(item.getPath().toLowerCase(), item);
     }
 
     @Override
     public void clear() {
-        nameToRepositoryMap.clear();
-        pathToName.clear();
+        pathToRepositoryMap.clear();
+        //pathToName.clear();
     }
 
     public Repository getRepositoryByPath(String path){
-        if(pathToName.containsKey(path.toLowerCase())){
-            String name = pathToName.get(path.toLowerCase());
-            return nameToRepositoryMap.containsKey(name) ? nameToRepositoryMap.get(name) : null;
+        if(pathToRepositoryMap.containsKey(path.toLowerCase())){
+            return pathToRepositoryMap.get(path.toLowerCase());
         }
         return null;
     }

@@ -61,10 +61,6 @@ public class Engine {
         return repositoriesManager.getActive();
     }
 
-    public Repository getRepositoryByName(String name) {
-        return repositoriesManager.getRepository(name);
-    }
-
     public boolean isLocalRepository(){
         return repositoriesManager.getActive().isLocalRepository();
     }
@@ -75,6 +71,10 @@ public class Engine {
 
     public void changeUsername(String username) {
         this.username = username;
+    }
+
+    public Repository getRepositoryByPath(String path){
+        return repositoriesManager.getRepositoryByPath(path);
     }
 
     public BranchManager getBranchesManager() {

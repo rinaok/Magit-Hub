@@ -129,8 +129,11 @@ public class RepositoryServlet extends HttpServlet {
         uiManager = ServletUtils.getUIManager(getServletContext());
 
         BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
-        String repositoryName = br.readLine();
-        currRepo = uiManager.getRepositoryByName(repositoryName);
+        String[] data = br.readLine().split("&");
+        String user = data[1];
+        String repoName = data[0];
+        String path = ServletUtils.REPOSITORY_DIR + "\\" + user +"\\"+ repoName;
+        currRepo = uiManager.getRepositoryByPath(path);
         try {
             uiManager.changeActiveRepository(currRepo.getPath(), currRepo.getName());
         } catch (ParserConfigurationException e) {

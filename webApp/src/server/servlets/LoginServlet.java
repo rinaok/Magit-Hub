@@ -1,5 +1,6 @@
 package server.servlets;
 
+import engine.ui.UIManager;
 import engine.users.UserManager;
 import server.constants.Constants;
 import server.utils.ServletUtils;
@@ -33,6 +34,12 @@ public class LoginServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+
+     public void setActiveUser(String user){
+         UIManager uiManager = ServletUtils.getUIManager(getServletContext());
+         uiManager.changeUserName(user);
+     }
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -83,12 +90,14 @@ public class LoginServlet extends HttpServlet {
 
                         //redirect the request to the chat room - in order to actually change the URL
                         System.out.println("On login, request URI is: " + request.getRequestURI());
+                        setActiveUser(usernameFromParameter);
                         response.sendRedirect(USER_PROFILE_URL);
                     }
                 }
             }
         } else {
             //user is already logged in
+            setActiveUser(usernameFromSession);
             response.sendRedirect(USER_PROFILE_URL);
         }
     }
@@ -133,3 +142,4 @@ public class LoginServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 }
+
