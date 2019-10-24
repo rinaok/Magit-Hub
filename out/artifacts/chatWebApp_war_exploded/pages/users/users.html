@@ -14,6 +14,7 @@
 <div class="content">
 	<div class="container-fluid">
 		<h1>MAGit Hub</h1>
+		<label>Hello : </label><label id="activeUser"></label>
 		<div class="button">
 			<a href="../../users/logout">Logout</a>
 		</div><br>
@@ -43,6 +44,7 @@
 							<th>Number Of Branches</th>
 							<th>Last Commit Date</th>
 							<th>Last Commit Message</th>
+							<th>Forked</th>
 						</tr>
 						</thead>
 						<tbody>
@@ -52,9 +54,9 @@
 				<div class="col-3">
 					<div class="content">
 						<div id="msgwindow">
-							<h4>Chat</h4>
+							<h4>Messages</h4>
 							<div id="msgsrea" class="span6"></div>
-							<form id="msgform" method="POST" action="getMessages">
+							<form id="msgform" method="GET" action="getMessages">
 							</form>
 						</div>
 					</div>

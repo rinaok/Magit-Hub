@@ -8,6 +8,7 @@ import engine.manager.MagitMsgManager;
 import engine.manager.SingleMessageEntry;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+@WebServlet(name = "MessagesServlet", urlPatterns = {"/pages/users/messages", "/pages/repository/messages"})
 public class MessagesServlet extends HttpServlet {
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -23,15 +25,11 @@ public class MessagesServlet extends HttpServlet {
         response.setContentType("application/json");
         MagitMsgManager magitManager = ServletUtils.getMsgManager(getServletContext());
         String username = SessionUtils.getUsername(request);
-        if (username == null) {
-            response.sendRedirect(request.getContextPath() + "/index.html");
-        }
-
         /*
         verify chat version given from the user is a valid number. if not it is considered an error and nothing is returned back
         Obviously the UI should be ready for such a case and handle it properly
          */
-        int msgVersion = ServletUtils.getIntParameter(request, Constants.GIT_VERSION_PARAMETER);
+        int msgVersion = ServletUtils.getIntParameter(request, Constants.MSG_VERSION_PARAMETER);
         if (msgVersion == Constants.INT_PARAMETER_ERROR) {
             return;
         }
@@ -44,14 +42,14 @@ public class MessagesServlet extends HttpServlet {
         List<SingleMessageEntry> msgEntries;
         synchronized (getServletContext()) {
             msgManagerVersion = magitManager.getVersion();
-            msgEntries = magitManager.getMessagesEntries(msgVersion);
+            msgEntries = magitManager.getMessagesEntries(msgVersion, username);
         }
 
         // log and create the response json string
         MessagesAndVersion mav = new MessagesAndVersion(msgEntries, msgVersion);
         Gson gson = new Gson();
         String jsonResponse = gson.toJson(mav);
-        logServerMessage("Server Messages version: " + msgManagerVersion + ", User '" + username + "' Chat version: " + msgVersion);
+        logServerMessage("Server Messages version: " + msgManagerVersion + ", User '" + username + "' Message version: " + msgVersion);
         logServerMessage(jsonResponse);
 
         try (PrintWriter out = response.getWriter()) {

@@ -12,7 +12,7 @@ import static server.constants.Constants.INT_PARAMETER_ERROR;
 public class ServletUtils {
 	public static final String REPOSITORY_DIR = "C:\\magit-ex3";
 	private static final String USER_MANAGER_ATTRIBUTE_NAME = "userManager";
-	private static final String CHAT_MANAGER_ATTRIBUTE_NAME = "chatManager";
+	private static final String MSG_MANAGER_ATTRIBUTE_NAME = "msgManager";
 	private static final String UI_MANAGER_ATTRIBUTE_NAME = "uiManager";
 
 	/*
@@ -20,7 +20,7 @@ public class ServletUtils {
 	the actual fetch of them is remained un-synchronized for performance POV
 	 */
 	private static final Object userManagerLock = new Object();
-	private static final Object chatManagerLock = new Object();
+	private static final Object msgManagerLock = new Object();
 	private static final Object uiManagerLock = new Object();
 
 	public static UserManager getUserManager(ServletContext servletContext) {
@@ -34,12 +34,12 @@ public class ServletUtils {
 	}
 
 	public static MagitMsgManager getMsgManager(ServletContext servletContext) {
-		synchronized (chatManagerLock) {
-			if (servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME) == null) {
-				servletContext.setAttribute(CHAT_MANAGER_ATTRIBUTE_NAME, new MagitMsgManager());
+		synchronized (msgManagerLock) {
+			if (servletContext.getAttribute(MSG_MANAGER_ATTRIBUTE_NAME) == null) {
+				servletContext.setAttribute(MSG_MANAGER_ATTRIBUTE_NAME, new MagitMsgManager());
 			}
 		}
-		return (MagitMsgManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
+		return (MagitMsgManager) servletContext.getAttribute(MSG_MANAGER_ATTRIBUTE_NAME);
 	}
 
 	public static UIManager getUIManager(ServletContext servletContext) {

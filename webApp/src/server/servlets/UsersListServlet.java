@@ -1,8 +1,10 @@
 package server.servlets;
 
 import com.google.gson.Gson;
+import engine.manager.MagitMsgManager;
 import engine.ui.UIManager;
 import engine.users.UserManager;
+import logic.manager.Utils;
 import server.utils.ServletUtils;
 import server.utils.SessionUtils;
 
@@ -21,6 +23,7 @@ public class UsersListServlet extends HttpServlet {
     private final static String GET_USERLIST = "2";
     private final static String CLONE = "3";
     private UIManager uiManager;
+    private MagitMsgManager msgManager;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -45,6 +48,10 @@ public class UsersListServlet extends HttpServlet {
         String localPath = ServletUtils.REPOSITORY_DIR + "\\" + loggedInUser + "\\" + repoName;
         try {
             uiManager.doClone(remotePath, localPath, repoName);
+            String msg = "Fork: The repository [" + repoName + "] was " +
+                    "forked by the user [" + loggedInUser +"]";
+            msgManager = ServletUtils.getMsgManager(getServletContext());
+            msgManager.addMsgString(msg, Utils.getTime(), owner);
         } catch (Exception e) {
             e.printStackTrace();
         }

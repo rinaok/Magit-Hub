@@ -31,7 +31,7 @@ public class SendMessagesServlet extends HttpServlet {
         if (messageString != null && !messageString.isEmpty()) {
             logServerMessage("Adding messages string from : " + messageString);
             synchronized (getServletContext()) {
-                magitMsgManager.addMsgString(messageString, timestamp);
+                //magitMsgManager.addMsgString(messageString, timestamp);
             }
         }
     }

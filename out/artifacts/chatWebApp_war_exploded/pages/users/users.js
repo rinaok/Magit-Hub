@@ -1,7 +1,7 @@
 var chatVersion = 0;
 var refreshRate = 2000; //milli seconds
 var USER_LIST_URL = buildUrlWithContextPath("userslist");
-var CHAT_LIST_URL = buildUrlWithContextPath("chat");
+var MESSAGE_LIST_URL = buildUrlWithContextPath("messages");
 var GET_ACTIVE_USER = 1;
 var GET_USERLIST = 2;
 var CLONE = 3;
@@ -82,9 +82,8 @@ function ajaxUsersList(){
 //in the chat content, we will get the new string as well
 function ajaxChatContent() {
     $.ajax({
-        url: CHAT_LIST_URL,
-        data: "chatversion=" + chatVersion,
-        dataType: 'json',
+        url: "messages",
+        data: "msgVersion=" + chatVersion,
         success: function(data) {
             /*
              data will arrive in the next form:
