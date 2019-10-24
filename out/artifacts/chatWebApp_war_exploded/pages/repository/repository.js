@@ -74,12 +74,22 @@ function showBranchesData(branches){
     for (var i = 0 ; i < branches.length; i++) {
         var branch = branches[i];
         if(branch.isHead){
-            branchesList.append("<li class='list-group-item list-group-item-primary'><h6>" + branch.name + "  ||  Head Branch</h6><p>" + branch.commitSha1 + "</p>" +
-                "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Delete\" style=\"float: right;\"></li>");
+            branchesList.append(
+                "<li class='list-group-item list-group-item-primary'>" +
+                "<h6>" + branch.name + "  ||  Head Branch</h6>" +
+                "<p>" + branch.commitSha1 + "</p>" +
+                "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Delete\" style=\"float: right;\">" +
+                "<input id=\"checkout\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Checkout\" style=\"float: right;\">" +
+                "</li>");
         }
         else{
-            branchesList.append("<li class='list-group-item list-group-item-light'><h6>" + branch.name + "</h6><p>" + branch.commitSha1 + "</p>" +
-                "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Delete\" style=\"float: right;\"></li>");
+            branchesList.append(
+                "<li class='list-group-item list-group-item-light'>" +
+                "<h6>" + branch.name + "</h6>" +
+                "<p>" + branch.commitSha1 + "</p>" +
+                "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Delete\" style=\"float: right;\">" +
+                "<input id=\"checkout\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Checkout\" style=\"float: right;\">" +
+                "</li>");
         }
     }
 }
@@ -131,8 +141,8 @@ function showCommitFiles(files) {
             tableBody = tableBody + "<tr>";
             for (var j = 0; j < table.rows.length; j++){
                 tableBody = tableBody + "<td><b>Name </b>" + row["name"] + "<br><b>Type </b>" +
-                row["type"] + "<br><b>SHA1 </b>" + row["sha1"] + "<br><b>Modified By </b>" + row["lastModifier"] +
-                    "<br><b>Modification Date </b>" + row["modificationDate"] + "</td>";
+                row["type"] + "<br><b>SHA1 </b><small>" + row["sha1"] + "</small><br><b>Modified By </b>" + row["lastModifier"] +
+                    "<br><b>Modification Date </b><small>" + row["modificationDate"] + "</small></td>";
             }
             tableBody = tableBody + "</tr>";
         }
@@ -151,15 +161,15 @@ function showCommits(commits){
     commits.forEach(function(row) {
         // Create a new row in the table for every element in the data array.
         tableBody = tableBody + "<tr style=\"cursor:pointer\">";
-
+        var btn = "<input id=\"createBranch\" type=\"submit\" class=\"btn btn-primary\" value=\"Create Branch\" +/>";
         for (var j = 0; j < table.rows.length; j++){
-            tableBody = tableBody + "<td>" + row["sha1"] + "</td>";
+            tableBody = tableBody + "<td><small>" + row["sha1"] + "</small></td>";
             tableBody = tableBody + "<td>" + row["commit"]["message"] + "</td>";
-            tableBody = tableBody + "<td>" + row["commit"]["creationDate"] + "</td>";
+            tableBody = tableBody + "<td><small>" + row["commit"]["creationDate"] + "</small></td>";
             tableBody = tableBody + "<td>" + row["commit"]["createdBy"] + "</td>";
             tableBody = tableBody + "<td>" + row["pointingBranches"] + "</td>";
+            tableBody = tableBody + "<td>" + btn + "</td>";
         }
-
         tableBody = tableBody + "</tr>";
     });
 
