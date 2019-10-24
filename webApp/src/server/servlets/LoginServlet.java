@@ -88,7 +88,6 @@ public class LoginServlet extends HttpServlet {
                         //create a new one
                         request.getSession(true).setAttribute(Constants.USERNAME, usernameFromParameter);
 
-                        //redirect the request to the chat room - in order to actually change the URL
                         System.out.println("On login, request URI is: " + request.getRequestURI());
                         setActiveUser(usernameFromParameter);
                         response.sendRedirect(USER_PROFILE_URL);

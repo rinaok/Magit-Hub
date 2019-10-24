@@ -25,19 +25,12 @@ public class MessagesServlet extends HttpServlet {
         response.setContentType("application/json");
         MagitMsgManager magitManager = ServletUtils.getMsgManager(getServletContext());
         String username = SessionUtils.getUsername(request);
-        /*
-        verify chat version given from the user is a valid number. if not it is considered an error and nothing is returned back
-        Obviously the UI should be ready for such a case and handle it properly
-         */
+
         int msgVersion = ServletUtils.getIntParameter(request, Constants.MSG_VERSION_PARAMETER);
         if (msgVersion == Constants.INT_PARAMETER_ERROR) {
             return;
         }
 
-        /*
-        Synchronizing as minimum as I can to fetch only the relevant information from the chat manager and then only processing and sending this information onward
-        Note that the synchronization here is on the ServletContext, and the one that also synchronized on it is the chat servlet when adding new chat lines.
-         */
         int msgManagerVersion = 0;
         List<SingleMessageEntry> msgEntries;
         synchronized (getServletContext()) {

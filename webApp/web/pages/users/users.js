@@ -42,14 +42,10 @@ function onUserListChanged(){
     getRepositoryByName(username);
 }
 
-//entries = the added chat strings represented as a single string
 function appendToMsgArea(entries) {
-//    $("#chatarea").children(".success").removeClass("success");
-    
     // add the relevant entries
     $.each(entries || [], appendMsgEntry);
     
-    // handle the scroller to auto scroll to the end of the chat area
     var scroller = $("#msgarea");
     var height = scroller.scrollTop() - $(scroller).height();
     $(scroller).stop().animate({ scrollTop: height }, "slow");
@@ -76,32 +72,11 @@ function ajaxUsersList(){
     });
 }
 
-//call the client.server and get the chat version
-//we also send it the current chat version so in case there was a change
-//in the chat content, we will get the new string as well
 function ajaxMsgContent() {
     $.ajax({
         url: "messages",
         data: "msgVersion=" + msgVersion,
         success: function(data) {
-            /*
-             data will arrive in the next form:
-             {
-                "entries": [
-                    {
-                        "chatString":"Hi",
-                        "username":"bbb",
-                        "time":1485548397514
-                    },
-                    {
-                        "chatString":"Hello",
-                        "username":"bbb",
-                        "time":1485548397514
-                    }
-                ],
-                "version":1
-             }
-             */
             console.log("Server msg version: " + data.version + ", Current msg version: " + msgVersion);
             if (data.version !== msgVersion) {
                 msgVersion = data.version;
@@ -126,7 +101,6 @@ $(function() { // onload...do
                 console.error("Failed to submit");
             },
             success: function(r) {
-                //do not add the user string to the chat area
                 //since it's going to be retrieved from the client.server
                 //$("#result h1").text(r);
             }
@@ -147,7 +121,6 @@ $(function() {
     //The users list is refreshed automatically every second
     setInterval(ajaxUsersList, refreshRate);
     
-    //The chat content is refreshed only once (using a timeout) but
     //on each call it triggers another execution of itself later (1 second later)
     triggerAjaxMsgContent();
 });

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="MagitLogicEngine">
+    <output-path>$PROJECT_DIR$/out/artifacts/MagitLogicEngine</output-path>
+    <root id="archive" name="MagitLogicEngine.jar">
+      <element id="module-output" name="logicEngine" />
+    </root>
+  </artifact>
+</component>

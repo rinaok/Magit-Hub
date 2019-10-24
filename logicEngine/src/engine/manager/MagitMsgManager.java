@@ -5,10 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/*
-This class is thread safe in the manner of adding\fetching new chat lines, but not in the manner of getting the size of the list
-if the use of getVersion is to be incorporated with other methods here - it should be synchronized from the user code
- */
 public class MagitMsgManager {
 
     private final Map<String, List<SingleMessageEntry>> magitDataList; // username to list of messages
