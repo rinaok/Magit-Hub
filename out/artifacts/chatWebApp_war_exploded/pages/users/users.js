@@ -2,6 +2,9 @@ var chatVersion = 0;
 var refreshRate = 2000; //milli seconds
 var USER_LIST_URL = buildUrlWithContextPath("userslist");
 var CHAT_LIST_URL = buildUrlWithContextPath("chat");
+var GET_ACTIVE_USER = 1;
+var GET_USERLIST = 2;
+var CLONE = 3;
 
 function refreshUsersList(users) {
     $.each(users || [], function(index, username) {
@@ -11,9 +14,27 @@ function refreshUsersList(users) {
             option.appendTo($("#usersList"));
         }
     });
+    if(!$('#usersList').val()[0])
+        $('#usersList option[value="' + document.getElementById('activeUser').innerHTML + '"]').prop({selected: true});
 }
 
 $(function() { // onload...do
+    var data = "reqType=" + GET_ACTIVE_USER;
+    $.ajax({
+        method: 'GET',
+        url: "users",
+        data: data,
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            document.getElementById('activeUser').innerHTML = r;
+        }
+    });
+
     $('#usersList').change(onUserListChanged);
 });
 
@@ -45,9 +66,11 @@ function createChatEntry (entry){
     return $("<span class=\"success\">").append(entry.username + "> " + entry.chatString);
 }
 
-function ajaxUsersList() {
+function ajaxUsersList(){
+    var data = "reqType=" + GET_USERLIST;
     $.ajax({
         url: USER_LIST_URL,
+        data: data,
         success: function(users) {
             refreshUsersList(users);
         }
@@ -132,6 +155,11 @@ $(function() {
 });
 
 $(function() { // onload...do
+    getRepositories();
+});
+
+function getRepositories(){
+    $("#activeUser").val("")
     $("#uploadForm").submit(function() {
         var file = this[0].files[0];
         var formData = new FormData();
@@ -153,8 +181,8 @@ $(function() { // onload...do
         // return value of the submit operation
         // by default - we'll always return false so it doesn't redirect the user.
         return false;
-    })
-});
+    });
+}
 
 function getRepositoryByName(username) {
     $.ajax({
@@ -170,43 +198,110 @@ function getRepositoryByName(username) {
         success: function (r) {
             $('#repositoriesTable tbody').empty();
             for (var i = 0 ; i < r.length; i++) {
-                updateRepositoriesTable(JSON.parse(r[i]));
+                updateRepositoriesTable(JSON.parse(r[i]), username);
             }
         }
-    })
+    });
+}
+
+function insertForkedRepositoryToList(){
+    var username = document.getElementById('activeUser').innerHTML;
+    $.ajax({
+        method: 'GET',
+        data: username,
+        url: "upload",
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            $('#repositoriesTable tbody').empty();
+            for (var i = 0 ; i < r.length; i++) {
+                updateRepositoriesTable(JSON.parse(r[i]), username);
+            }
+        }
+    });
+}
+
+function fork(repoOwner, repoName){
+    var req = "reqType=" + CLONE + "&owner=" + repoOwner + "&repoName=" + repoName;
+    $.ajax({
+        method: 'GET',
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        data: req,
+        url: "users",
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            insertForkedRepositoryToList();
+            $.ajax({
+                method: 'POST',
+                data: repoName,
+                url: "repo",
+                processData: false, // Don't process the files
+                contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+                timeout: 4000,
+                error: function (e) {
+                    alert(e.responseText);
+                },
+                success: function (r) {
+                    window.location = '../repository/repository.html'
+                }
+            });
+        }
+    });
 }
 
 function updateRepositoriesTable(r){
+    var owner = $('#usersList').val()[0];
+    var loggedInUser = document.getElementById('activeUser').innerHTML;
     var htmlString = '<tr class="child" style=\"cursor:pointer\"><td>'
         + r["Name"] + '</td><td>'
         + r["ActiveBranch"] + '</td><td>'
         + r["BranchesAmount"] + '</td><td>'
         + r["CommitDate"] + '</td><td>'
-        + r["CommitMessage"] + '</td></tr>';
+        + r["CommitMessage"] + '</td><td>'
+        + r["Forked"] + '</td></tr>';
     $('#repositoriesTable tbody').append(htmlString);
     var rowElement = $.parseHTML(htmlString)
     var table = document.getElementById("repositoriesTable");
     if (table != null) {
         for (var i = 0; i < table.rows.length; i++) {
             for (var j = 0; j < table.rows[i].cells.length; j++)
-                table.rows[i].onclick = function (e) {
-                var repoName = e.currentTarget.firstChild.innerText;
-                $.ajax({
-                    method: 'POST',
-                    data: repoName,
-                    url: "repo",
-                    processData: false, // Don't process the files
-                    contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-                    timeout: 4000,
-                    error: function (e) {
-                        alert(e.responseText);
-                    },
-                    success: function (r) {
-                        window.location = '../repository/repository.html'
+            if (loggedInUser == owner) { // logged in user
+                    table.rows[i].onclick = function (e) {
+                        var repoName = e.currentTarget.firstChild.innerText;
+                        $.ajax({
+                            method: 'POST',
+                            data: repoName,
+                            url: "repo",
+                            processData: false, // Don't process the files
+                            contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+                            timeout: 4000,
+                            error: function (e) {
+                                alert(e.responseText);
+                            },
+                            success: function (r) {
+                                window.location = '../repository/repository.html'
+                            }
+                        });
                     }
-                });
+                }
+            else{
+                table.rows[i].onclick = function (ev) {
+                    var repoName = ev.currentTarget.firstChild.innerText;
+                    var answer = confirm("You cannot open this repository since it's owned by another user. " +
+                        "Would you like to fork it?");
+                    if(answer){
+                        fork(owner, repoName);
+                    }
+                }
             }
         }
     }
 }
-

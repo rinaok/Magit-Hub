@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import static server.constants.Constants.INT_PARAMETER_ERROR;
 
 public class ServletUtils {
-
+	public static final String REPOSITORY_DIR = "C:\\magit-ex3";
 	private static final String USER_MANAGER_ATTRIBUTE_NAME = "userManager";
 	private static final String CHAT_MANAGER_ATTRIBUTE_NAME = "chatManager";
 	private static final String UI_MANAGER_ATTRIBUTE_NAME = "uiManager";

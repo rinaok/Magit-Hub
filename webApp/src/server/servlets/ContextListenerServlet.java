@@ -1,6 +1,7 @@
 package server.servlets;
 
 import org.apache.commons.io.FileUtils;
+import server.utils.ServletUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -10,7 +11,7 @@ import java.io.IOException;
 
 public final class ContextListenerServlet implements ServletContextListener {
 
-    private String repositoryDir = "C:\\magit-ex3";
+    //private String repositoryDir = "C:\\magit-ex3";
     private File file;
     public ContextListenerServlet() {
     }
@@ -18,7 +19,7 @@ public final class ContextListenerServlet implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         ServletContext servletContext = servletContextEvent.getServletContext();
         try {
-            file = new File(repositoryDir);
+            file = new File(ServletUtils.REPOSITORY_DIR);
             file.mkdir();
         } catch (Exception e) {
             System.out.println("Error creating directory: " + e.getMessage());

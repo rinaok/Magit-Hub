@@ -337,4 +337,8 @@ public class UIManager {
     public List<String> getModifieddFiles() throws IOException {
         return systemEngine.getEditedFiles();
     }
+
+    public boolean isForked(){
+        return systemEngine.getRepository().isLocalRepository();
+    }
 }

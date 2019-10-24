@@ -38,7 +38,7 @@ public class FileUploadServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        printRepositoryDetails(response, SessionUtils.getUsername(request));
     }
 
     @Override
@@ -96,6 +96,7 @@ public class FileUploadServlet extends HttpServlet {
         repositoryDetails.addProperty("BranchesAmount", uiManager.getBranches().size());
         repositoryDetails.addProperty("CommitDate", uiManager.getHeadCommit().getCreationDate());
         repositoryDetails.addProperty("CommitMessage", uiManager.getHeadCommit().getMessage());
+        repositoryDetails.addProperty("Forked", uiManager.isForked());
 
         String json = new Gson().toJson(repositoryDetails);
         response.setContentType("application/json");
