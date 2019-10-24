@@ -158,7 +158,7 @@ $(function() { // onload...do
 
 function getRepositories(){
     $("#activeUser").val("")
-    $("#uploadForm").submit(function() {
+    $("#uploadForm").change(function() {
         var file = this[0].files[0];
         var formData = new FormData();
         formData.append("fake-key-1", file);

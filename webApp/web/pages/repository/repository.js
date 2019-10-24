@@ -71,25 +71,21 @@ function showBranchesData(branches){
     branchesList.empty();
     for (var i = 0 ; i < branches.length; i++) {
         var branch = branches[i];
-        debugger
-        if(branch.isHead){
-            branchesList.append(
-                "<li class='list-group-item list-group-item-primary'>" +
-                "<h6>" + branch.name + "  ||  Head Branch</h6>" +
-                "<p>" + branch.commitSha1 + "</p>" +
-                "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Delete\" style=\"float: right;\">" +
-                "<input id=\"checkout\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Checkout\" style=\"float: right;\">" +
-                "</li>");
+        var colorClass = "<li class='list-group-item list-group-item-light'>";
+        if(branch.isHead) {
+            colorClass = "<li class='list-group-item list-group-item-primary'>";
         }
-        else{
-            branchesList.append(
-                "<li class='list-group-item list-group-item-light'>" +
-                "<h6>" + branch.name + "</h6>" +
-                "<p>" + branch.commitSha1 + "</p>" +
-                "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Delete\" style=\"float: right;\">" +
-                "<input id=\"checkout\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Checkout\" style=\"float: right;\">" +
-                "</li>");
-        }
+        branchesList.append(
+            colorClass +
+            "<div style='max-width: fit-content; max-height: 10px;'>" +
+            "<h6>" + branch.name + "  ||  Head Branch</h6>" +
+            "<p>" + branch.commitSha1 + "</p>" +
+            "</div>" +
+            "<div>" +
+            "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Delete\" style=\"float: right;\">" +
+            "<input id=\"checkout\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Checkout\" style='float: right; margin-right: 10px;'>" +
+            "</div>" +
+            "</div>");
     }
 }
 
@@ -138,9 +134,9 @@ function showCommitFiles(files) {
     files.forEach(function(row){
             tableBody = tableBody + "<tr>";
             for (var j = 0; j < table.rows.length; j++){
-                tableBody = tableBody + "<td><b>Name </b>" + row["name"] + "<br><b>Type </b>" +
-                row["type"] + "<br><b>SHA1 </b><small>" + row["sha1"] + "</small><br><b>Modified By </b>" + row["lastModifier"] +
-                    "<br><b>Modification Date </b><small>" + row["modificationDate"] + "</small></td>";
+                tableBody = tableBody + "<td><b>Name </b><small>" + row["name"] + "</small><br><b>Type </b><small>" +
+                row["type"] + "</small><br><b>SHA1 </b><small>" + row["sha1"] + "</small><br><b>Modified By </b><small>" + row["lastModifier"] +
+                    "</small><br><b>Modification Date </b><small>" + row["modificationDate"] + "</small></td>";
             }
             tableBody = tableBody + "</tr>";
         }
@@ -162,11 +158,11 @@ function showCommits(commits){
         var btn = "<input id=\"createBranch\" type=\"submit\" class=\"btn btn-primary\" value=\"Create Branch\" +/>";
         for (var j = 0; j < table.rows.length; j++){
             tableBody = tableBody + "<td><small>" + row["sha1"] + "</small></td>";
-            tableBody = tableBody + "<td>" + row["commit"]["message"] + "</td>";
+            tableBody = tableBody + "<td><small>" + row["commit"]["message"] + "</small></td>";
             tableBody = tableBody + "<td><small>" + row["commit"]["creationDate"] + "</small></td>";
-            tableBody = tableBody + "<td>" + row["commit"]["createdBy"] + "</td>";
-            tableBody = tableBody + "<td>" + row["pointingBranches"] + "</td>";
-            tableBody = tableBody + "<td>" + btn + "</td>";
+            tableBody = tableBody + "<td><small>" + row["commit"]["createdBy"] + "</small></td>";
+            tableBody = tableBody + "<td><small>" + row["pointingBranches"] + "</small></td>";
+            tableBody = tableBody + "<td><small>" + btn + "</small></td>";
         }
         tableBody = tableBody + "</tr>";
     });
@@ -210,7 +206,6 @@ $(document).on('click', '#createBranch', function (event) {
         contentType: false, // Set content type to false as jQuery will tell the server its a query string request
         timeout: 4000,
         error: function (e) {
-            debugger
             alert(e.responseText);
         },
         success: function (r) {

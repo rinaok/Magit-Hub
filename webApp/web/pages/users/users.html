@@ -14,28 +14,41 @@
 <div class="content">
 	<div class="container-fluid">
 		<h1>MAGit Hub</h1>
-		<label>Hello :&nbsp;</label><label id="activeUser"></label>
-		<div class="button">
-			<a href="../../users/logout">Logout</a>
-		</div><br>
+		<ul>
+			<li><label>Hello :&nbsp;</label></li>
+			<li><label id="activeUser"></label></li>
+			<li><a href="../../users/logout">Logout</a></li>
+		</ul>
 		<div class="container-fluid">
+			<br>
 			<div class="row">
 				<div class="col-3">
 					<select id="usersList" class="custom-select" multiple>
 					</select>
 				</div>
-				<div class="col-6">
+				<div class="col-3">
 					<form method="POST" action="upload" enctype="multipart/form-data" id="uploadForm">
 						<div class="form-group">
-							<div class="input-group input-file">
-								<input type="file" class="form-control" name="repository" placeholder='Choose a file...' />
-							</div>
-						</div>
-						<div class="form-group">
-							<input type="submit" class="btn btn-primary pull-right" value="Upload File">
+							<label class="btn btn-primary btn-file" style="cursor: pointer;"> Upload File
+								<input class="form-control" type="file" style="display: none;">
+							</label>
 						</div>
 					</form>
-					<h3>Repositories</h3>
+				</div>
+				<div class="col-6">
+					<div class="content">
+						<h4>Messages</h4>
+						<div id="msgwindow">
+							<div id="msgarea" class="span6"></div>
+							<form id="msgform" method="GET" action="getMessages">
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<h3 align="center">Repositories</h3>
 					<table class="table table-hover" id="repositoriesTable">
 						<thead>
 						<tr>
@@ -50,16 +63,6 @@
 						<tbody>
 						</tbody>
 					</table>
-				</div>
-				<div class="col-3">
-					<div class="content">
-						<div id="msgwindow">
-							<h4>Messages</h4>
-							<div id="msgarea" class="span6"></div>
-							<form id="msgform" method="GET" action="getMessages">
-							</form>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
