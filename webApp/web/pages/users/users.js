@@ -50,14 +50,16 @@ function appendToMsgArea(entries) {
     $.each(entries || [], appendMsgEntry);
     
     // handle the scroller to auto scroll to the end of the chat area
-    var scroller = $("#msgarea");
-    var height = scroller.scrollTop() - $(scroller).height();
-    $(scroller).stop().animate({ scrollTop: height }, "slow");
+    // var scroller = $("#msgarea");
+    // var height = scroller.scrollTop() - $(scroller).height();
+    // $(scroller).stop().animate({ scrollTop: height }, "slow");
+    var elmnt = document.getElementById("msgarea");
+    elmnt.scrollIntoView();
 }
 
 function appendMsgEntry(index, entry){
     var entryElement = createMsgEntry(entry);
-    $("#msgarea").append(entryElement).append("<br>");
+    $("#msgarea").append(entryElement).append("<br><br>");
 }
 
 function createMsgEntry (entry){
@@ -84,24 +86,6 @@ function ajaxMsgContent() {
         url: "messages",
         data: "msgVersion=" + msgVersion,
         success: function(data) {
-            /*
-             data will arrive in the next form:
-             {
-                "entries": [
-                    {
-                        "chatString":"Hi",
-                        "username":"bbb",
-                        "time":1485548397514
-                    },
-                    {
-                        "chatString":"Hello",
-                        "username":"bbb",
-                        "time":1485548397514
-                    }
-                ],
-                "version":1
-             }
-             */
             console.log("Server msg version: " + data.version + ", Current msg version: " + msgVersion);
             if (data.version !== msgVersion) {
                 msgVersion = data.version;

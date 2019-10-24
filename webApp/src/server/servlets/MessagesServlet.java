@@ -42,7 +42,7 @@ public class MessagesServlet extends HttpServlet {
         List<SingleMessageEntry> msgEntries;
         synchronized (getServletContext()) {
             msgManagerVersion = magitManager.getVersion(username);
-            msgEntries = magitManager.getMessagesEntries(msgVersion, username);
+            msgEntries = magitManager.getMessagesEntries(msgManagerVersion - 1, username);
         }
 
         // log and create the response json string
