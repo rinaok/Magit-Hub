@@ -109,10 +109,17 @@ public class RepositoryServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = SessionUtils.getUsername(request);
-        String sha1 = request.getParameter("sha1");
+        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+        String[] data = br.readLine().split("&");
+        String sha1 = data[0];
+        String branchName = data[1];
         try {
-            uiManager.addNewBranch(username, sha1);
+            uiManager.addNewBranch(branchName, sha1);
+            List<Branch> branches = uiManager.getBranches();
+            String json = new Gson().toJson(branches);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(json);
         } catch (FailedToCreateBranchException e) {
             e.printStackTrace();
         } catch (FailedToCreateRepositoryException e) {

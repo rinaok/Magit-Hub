@@ -532,6 +532,7 @@ public class Engine {
         }
         Utils.createTxtFile(magitRepo + "\\" + Environment.BRANCHES, branchName, headCommit);
         Branch newBranch = new Branch(head, branchName);
+        newBranch.setCommitSha1(headCommit);
         branchesManager.addItem(newBranch);
     }
 

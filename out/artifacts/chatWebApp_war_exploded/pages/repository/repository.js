@@ -24,7 +24,6 @@ $(function() { // onload...do
         data : data,
         timeout: 4000,
         error: function (e) {
-            debugger;
             console.log(e.responseText);
         },
         success: function (r) {
@@ -49,7 +48,6 @@ function showOpenChanges(){
         contentType: false, // Set content type to false as jQuery will tell the server its a query string request
         timeout: 4000,
         error: function (e) {
-            debugger;
             alert(e.responseText);
         },
         success: function (changes) {
@@ -73,6 +71,7 @@ function showBranchesData(branches){
     branchesList.empty();
     for (var i = 0 ; i < branches.length; i++) {
         var branch = branches[i];
+        debugger
         if(branch.isHead){
             branchesList.append(
                 "<li class='list-group-item list-group-item-primary'>" +
@@ -115,7 +114,6 @@ function showWCFiles(files) {
                     type: 'GET',
                     data: request,
                     error: function (e) {
-                        debugger;
                         alert(e.responseText);
                     },
                     success: function (response) {
@@ -188,7 +186,6 @@ function showCommits(commits){
                     contentType: false, // Set content type to false as jQuery will tell the server its a query string request
                     timeout: 4000,
                     error: function (e) {
-                        debugger;
                         alert(e.responseText);
                     },
                     success: function (files) {
@@ -202,19 +199,23 @@ function showCommits(commits){
 
 $(document).on('click', '#createBranch', function (event) {
     event.preventDefault();
+    var sha1 = event.currentTarget.parentElement.parentElement.cells[0].innerText;
+    var branchName = prompt("Enter a Branch Name", "Branch Name");
+    var data = sha1 + "&" + branchName;
     $.ajax({
         method: 'PUT',
-        data: "lalala",
+        data: data,
         url: "repo",
         processData: false, // Don't process the files
         contentType: false, // Set content type to false as jQuery will tell the server its a query string request
         timeout: 4000,
         error: function (e) {
-            debugger;
+            debugger
             alert(e.responseText);
         },
         success: function (r) {
-            alert("successs");
+            showBranchesData(r);
+            alert("Branch created successfully");
         }
     });
 });
@@ -258,7 +259,6 @@ $(document).on('click', '#saveBtn', function (event) {
         type: 'POST',
         data: fileData,
         error: function (e) {
-            debugger;
             alert(e.response);
         },
         success: function (response) {
@@ -285,7 +285,6 @@ $(document).on('click', '#deleteBtn', function (event) {
             type: 'POST',
             data: fileData,
             error: function (e) {
-                debugger;
                 alert(e.response);
             },
             success: function (response) {
@@ -320,7 +319,6 @@ function refreshWC(){
         type: 'GET',
         data: req,
         error: function (e) {
-            debugger;
             alert(e.response);
         },
         success: function (response) {
@@ -340,7 +338,6 @@ $(document).on('click', '#submitBtn', function (event) {
         type: 'POST',
         data: fileData,
         error: function (e) {
-            debugger;
             alert(e.response);
         },
         success: function (response) {
@@ -363,7 +360,6 @@ $(document).on('click', '#commitBtn', function (event) {
             type: 'POST',
             data: data,
             error: function (e) {
-                debugger;
                 alert(e.response);
             },
             success: function (response) {
