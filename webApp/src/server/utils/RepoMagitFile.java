@@ -32,8 +32,10 @@ public class RepoMagitFile {
     private List<Branch> branches;
     private List<ExtendedCommit> commits;
     private List<WCFileNode> wcFiles;
+    private boolean isForked;
 
-    public RepoMagitFile(List<Branch> branches, List<Commit> commits, List<WCFileNode> wcFiles){
+    public RepoMagitFile(List<Branch> branches, List<Commit> commits, List<WCFileNode> wcFiles, boolean isForked){
+        this.isForked = isForked;
         this.branches = branches;
         this.commits = new ArrayList<>();
         for(Commit commit : commits){

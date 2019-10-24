@@ -9,9 +9,6 @@ var DELETE_FILE = 5;
 var NEW_FILE = 6;
 var COMMIT = 7;
 
-var ADDED_FILE = "NEW";
-var EDITED_FILE = "MODIFIED";
-var DELETED_FILE = "DELETED";
 
 $(function() { // onload...do
     $('#addFileModal').find('.modal-header h8').hide();
@@ -35,9 +32,20 @@ $(function() { // onload...do
             showCommits(commits);
             showWCFiles(wc);
             showOpenChanges();
+            collaborationMenu(r.isForked);
         }
     })
 });
+
+function collaborationMenu(isForked){
+    if(isForked){
+
+    }
+    else{
+        var div = document.getElementById('collaborationTitle');
+        div.innerHTML += 'Collaboration options are unavailable for this repository, since it is not forked';
+    }
+}
 
 function showOpenChanges(){
     var data = "reqType=" + GET_OPEN_CHANGES;

@@ -11,3 +11,10 @@
 .content {
     margin: 3% 3% 3%;
 }
+
+#msgarea {
+    height: 380px;
+    width: 300px;
+    overflow: auto;
+    background: lightgrey;
+}
