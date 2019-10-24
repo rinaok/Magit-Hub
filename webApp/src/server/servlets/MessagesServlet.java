@@ -46,7 +46,7 @@ public class MessagesServlet extends HttpServlet {
         }
 
         // log and create the response json string
-        MessagesAndVersion mav = new MessagesAndVersion(msgEntries, msgVersion);
+        MessagesAndVersion mav = new MessagesAndVersion(msgEntries, msgManagerVersion);
         Gson gson = new Gson();
         String jsonResponse = gson.toJson(mav);
         logServerMessage("Server Messages version: " + msgManagerVersion + ", User '" + username + "' Message version: " + msgVersion);

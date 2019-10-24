@@ -1,7 +1,6 @@
-var chatVersion = 0;
+var msgVersion = 0;
 var refreshRate = 2000; //milli seconds
 var USER_LIST_URL = buildUrlWithContextPath("userslist");
-var MESSAGE_LIST_URL = buildUrlWithContextPath("messages");
 var GET_ACTIVE_USER = 1;
 var GET_USERLIST = 2;
 var CLONE = 3;
@@ -44,26 +43,26 @@ function onUserListChanged(){
 }
 
 //entries = the added chat strings represented as a single string
-function appendToChatArea(entries) {
+function appendToMsgArea(entries) {
 //    $("#chatarea").children(".success").removeClass("success");
     
     // add the relevant entries
-    $.each(entries || [], appendChatEntry);
+    $.each(entries || [], appendMsgEntry);
     
     // handle the scroller to auto scroll to the end of the chat area
-    var scroller = $("#chatarea");
-    var height = scroller[0].scrollHeight - $(scroller).height();
+    var scroller = $("#msgarea");
+    var height = scroller.scrollTop() - $(scroller).height();
     $(scroller).stop().animate({ scrollTop: height }, "slow");
 }
 
-function appendChatEntry(index, entry){
-    var entryElement = createChatEntry(entry);
-    $("#chatarea").append(entryElement).append("<br>");
+function appendMsgEntry(index, entry){
+    var entryElement = createMsgEntry(entry);
+    $("#msgarea").append(entryElement).append("<br>");
 }
 
-function createChatEntry (entry){
-    entry.chatString = entry.chatString.replace (":)", "<img class='smiley-image' src='../../common/images/smiley.png'/>");
-    return $("<span class=\"success\">").append(entry.username + "> " + entry.chatString);
+function createMsgEntry (entry){
+    //entry.message = entry.message.replace (":)", "<img class='smiley-image' src='../../common/images/smiley.png'/>");
+    return $("<span class=\"success\">").append(entry.timestamp + "> " + entry.message);
 }
 
 function ajaxUsersList(){
@@ -80,10 +79,10 @@ function ajaxUsersList(){
 //call the client.server and get the chat version
 //we also send it the current chat version so in case there was a change
 //in the chat content, we will get the new string as well
-function ajaxChatContent() {
+function ajaxMsgContent() {
     $.ajax({
         url: "messages",
-        data: "msgVersion=" + chatVersion,
+        data: "msgVersion=" + msgVersion,
         success: function(data) {
             /*
              data will arrive in the next form:
@@ -103,15 +102,15 @@ function ajaxChatContent() {
                 "version":1
              }
              */
-            console.log("Server chat version: " + data.version + ", Current chat version: " + chatVersion);
-            if (data.version !== chatVersion) {
-                chatVersion = data.version;
-                appendToChatArea(data.entries);
+            console.log("Server msg version: " + data.version + ", Current msg version: " + msgVersion);
+            if (data.version !== msgVersion) {
+                msgVersion = data.version;
+                appendToMsgArea(data.entries);
             }
-            triggerAjaxChatContent();
+            triggerAjaxMsgContent();
         },
         error: function(error) {
-            triggerAjaxChatContent();
+            triggerAjaxMsgContent();
         }
     });
 }
@@ -139,8 +138,8 @@ $(function() { // onload...do
     });
 });
 
-function triggerAjaxChatContent() {
-    setTimeout(ajaxChatContent, refreshRate);
+function triggerAjaxMsgContent() {
+    setTimeout(ajaxMsgContent, refreshRate);
 }
 
 //activate the timer calls after the page is loaded
@@ -150,7 +149,7 @@ $(function() {
     
     //The chat content is refreshed only once (using a timeout) but
     //on each call it triggers another execution of itself later (1 second later)
-    triggerAjaxChatContent();
+    triggerAjaxMsgContent();
 });
 
 $(function() { // onload...do
