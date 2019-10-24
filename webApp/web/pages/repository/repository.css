@@ -47,4 +47,25 @@ li a:hover:not(.active) {
     background-color: #ddd;
 }
 
+th{
+    font-size: small;
+}
+
+b{
+    font-size: small;
+}
+
 #files-tree{width:400px;}
+
+#commitFilesTable{
+    margin-left: 0px;
+    overflow-y: scroll;
+    max-height: inherit;
+    display: table-caption;
+}
+
+#commitFiles{
+    max-height: 400px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
