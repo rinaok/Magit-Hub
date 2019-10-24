@@ -38,7 +38,12 @@ public class FileUploadServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        printRepositoryDetails(response, SessionUtils.getUsername(request));
+        try{
+            printRepositoryDetails(response, SessionUtils.getUsername(request));
+        }
+        catch(Exception e){
+            System.out.println("doGet Error : Repository not exists");
+        }
     }
 
     @Override
@@ -89,29 +94,36 @@ public class FileUploadServlet extends HttpServlet {
             response.flushBuffer();
         }
         catch (Exception e){
-            System.out.println("Error : Repository not exists");
+            System.out.println("returnError Error : Repository not exists");
         }
     }
 
     private void printRepositoryDetails(HttpServletResponse response, String username) throws IOException {
-        List repositoriesList = new LinkedList();
-        JsonObject repositoryDetails = new JsonObject();
-        repositoryDetails.addProperty("Name", uiManager.getRepositoryName());
-        repositoryDetails.addProperty("ActiveBranch", uiManager.getHeadBranch());
-        repositoryDetails.addProperty("BranchesAmount", uiManager.getBranches().size());
-        repositoryDetails.addProperty("CommitDate", uiManager.getHeadCommit().getCreationDate());
-        repositoryDetails.addProperty("CommitMessage", uiManager.getHeadCommit().getMessage());
-        repositoryDetails.addProperty("Forked", uiManager.isForked());
+        try{
+            List repositoriesList = new LinkedList();
+            JsonObject repositoryDetails = new JsonObject();
+            repositoryDetails.addProperty("Name", uiManager.getRepositoryName());
+            repositoryDetails.addProperty("ActiveBranch", uiManager.getHeadBranch());
+            repositoryDetails.addProperty("BranchesAmount", uiManager.getBranches().size());
+            repositoryDetails.addProperty("CommitDate", uiManager.getHeadCommit().getCreationDate());
+            repositoryDetails.addProperty("CommitMessage", uiManager.getHeadCommit().getMessage());
+            repositoryDetails.addProperty("Forked", uiManager.isForked());
 
-        String json = new Gson().toJson(repositoryDetails);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        if(repositories.containsKey(username)){
-            repositoriesList = repositories.get(username);
+            String json = new Gson().toJson(repositoryDetails);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            if(repositories.containsKey(username)){
+                repositoriesList = repositories.get(username);
+            }
+            if(repositoriesList != null){
+                repositoriesList.add(json);
+                repositories.put(username, repositoriesList);
+            }
+            response.getWriter().write(json);
         }
-        repositoriesList.add(json);
-        repositories.put(username, repositoriesList);
-        response.getWriter().write(json);
+        catch(Exception e){
+            System.out.println("printRepositoryDetails Error : Repository not exists");
+        }
     }
 
     private String readFromInputStream(InputStream inputStream) {

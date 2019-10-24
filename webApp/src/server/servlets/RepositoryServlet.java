@@ -56,7 +56,8 @@ public class RepositoryServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String reqType = request.getParameter("reqType");
+        try {
+            String reqType = request.getParameter("reqType");
             switch (reqType) {
                 case GET_REPOSITORY_PAGE_DATA:
                     String json = getRepositoryPageData();
@@ -100,6 +101,10 @@ public class RepositoryServlet extends HttpServlet {
                     response.getWriter().write(toJSON);
                     break;
             }
+        }
+        catch (Exception e){
+            System.out.println("Error in GET repository");
+        }
     }
 
     @Override
@@ -111,6 +116,9 @@ public class RepositoryServlet extends HttpServlet {
         } catch (FailedToCreateBranchException e) {
             e.printStackTrace();
         } catch (FailedToCreateRepositoryException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
     }
@@ -125,27 +133,35 @@ public class RepositoryServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = SessionUtils.getUsername(request);
-        uiManager = ServletUtils.getUIManager(getServletContext());
+        try{
+            String username = SessionUtils.getUsername(request);
+            uiManager = ServletUtils.getUIManager(getServletContext());
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
-        String[] data = br.readLine().split("&");
-        String user = data[1];
-        String repoName = data[0];
-        String path = ServletUtils.REPOSITORY_DIR + "\\" + user +"\\"+ repoName;
-        currRepo = uiManager.getRepositoryByPath(path);
-        try {
-            uiManager.changeActiveRepository(currRepo.getPath(), currRepo.getName());
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (FailedToCreateRepositoryException e) {
-            e.printStackTrace();
+            BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+            String[] data = br.readLine().split("&");
+            String user = data[1];
+            String repoName = data[0];
+            String path = ServletUtils.REPOSITORY_DIR + "\\" + user +"\\"+ repoName;
+            currRepo = uiManager.getRepositoryByPath(path);
+            try {
+                uiManager.changeActiveRepository(currRepo.getPath(), currRepo.getName());
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            } catch (FailedToCreateRepositoryException e) {
+                e.printStackTrace();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+
+            if(username != currRepo.getUsername()){
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("not current user's repository");
+                response.flushBuffer();
+            }
         }
-
-        if(username != currRepo.getUsername()){
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("not current user's repository");
-            response.flushBuffer();
+        catch (Exception e){
+            System.out.println("Error in POST repository");
         }
     }
 
@@ -155,20 +171,29 @@ public class RepositoryServlet extends HttpServlet {
     }// </editor-fold>
 
     private String getRepositoryPageData(){
-        List<Branch> branches = uiManager.getBranches();
-        List<WCFileNode> wcFiles = new ArrayList<>();
-        try {
-            wcFiles = getWC();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (FailedToCreateRepositoryException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        try{
+            List<Branch> branches = uiManager.getBranches();
+            List<WCFileNode> wcFiles = new ArrayList<>();
+            try {
+                wcFiles = getWC();
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            } catch (FailedToCreateRepositoryException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            List<Commit> commits = new ArrayList<>(uiManager.getCommitsMap().values());
+            RepoMagitFile magitFile = new RepoMagitFile(branches, commits, wcFiles);
+            return new Gson().toJson(magitFile);
         }
-        List<Commit> commits = new ArrayList<>(uiManager.getCommitsMap().values());
-        RepoMagitFile magitFile = new RepoMagitFile(branches, commits, wcFiles);
-        return new Gson().toJson(magitFile);
+        catch (Exception e){
+            System.out.println("Error in get Repository Page Data");
+            return "";
+        }
     }
 
     private List<WCFileNode> getWC() throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
@@ -191,6 +216,9 @@ public class RepositoryServlet extends HttpServlet {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -201,5 +229,4 @@ public class RepositoryServlet extends HttpServlet {
                 uiManager.getModifieddFiles());
         return openChanges;
     }
-
 }
