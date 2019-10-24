@@ -24,6 +24,7 @@ $(function() { // onload...do
         data : data,
         timeout: 4000,
         error: function (e) {
+            debugger;
             console.log(e.responseText);
         },
         success: function (r) {
@@ -48,6 +49,7 @@ function showOpenChanges(){
         contentType: false, // Set content type to false as jQuery will tell the server its a query string request
         timeout: 4000,
         error: function (e) {
+            debugger;
             alert(e.responseText);
         },
         success: function (changes) {
@@ -103,6 +105,7 @@ function showWCFiles(files) {
                     type: 'GET',
                     data: request,
                     error: function (e) {
+                        debugger;
                         alert(e.responseText);
                     },
                     success: function (response) {
@@ -175,6 +178,7 @@ function showCommits(commits){
                     contentType: false, // Set content type to false as jQuery will tell the server its a query string request
                     timeout: 4000,
                     error: function (e) {
+                        debugger;
                         alert(e.responseText);
                     },
                     success: function (files) {
@@ -196,6 +200,7 @@ $(document).on('click', '#createBranch', function (event) {
         contentType: false, // Set content type to false as jQuery will tell the server its a query string request
         timeout: 4000,
         error: function (e) {
+            debugger;
             alert(e.responseText);
         },
         success: function (r) {
@@ -243,6 +248,7 @@ $(document).on('click', '#saveBtn', function (event) {
         type: 'POST',
         data: fileData,
         error: function (e) {
+            debugger;
             alert(e.response);
         },
         success: function (response) {
@@ -269,6 +275,7 @@ $(document).on('click', '#deleteBtn', function (event) {
             type: 'POST',
             data: fileData,
             error: function (e) {
+                debugger;
                 alert(e.response);
             },
             success: function (response) {
@@ -303,6 +310,7 @@ function refreshWC(){
         type: 'GET',
         data: req,
         error: function (e) {
+            debugger;
             alert(e.response);
         },
         success: function (response) {
@@ -322,6 +330,7 @@ $(document).on('click', '#submitBtn', function (event) {
         type: 'POST',
         data: fileData,
         error: function (e) {
+            debugger;
             alert(e.response);
         },
         success: function (response) {
@@ -344,6 +353,7 @@ $(document).on('click', '#commitBtn', function (event) {
             type: 'POST',
             data: data,
             error: function (e) {
+                debugger;
                 alert(e.response);
             },
             success: function (response) {

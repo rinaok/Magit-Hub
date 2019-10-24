@@ -83,9 +83,14 @@ public class FileUploadServlet extends HttpServlet {
     }
 
     private void returnError(HttpServletResponse response, String message) throws IOException {
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        response.getWriter().write(message);
-        response.flushBuffer();
+        try{
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write(message);
+            response.flushBuffer();
+        }
+        catch (Exception e){
+            System.out.println("Error : Repository not exists");
+        }
     }
 
     private void printRepositoryDetails(HttpServletResponse response, String username) throws IOException {
