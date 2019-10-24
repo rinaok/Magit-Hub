@@ -2,6 +2,7 @@ package server.servlets;
 
 import com.google.gson.Gson;
 import engine.ui.UIManager;
+import logic.manager.Exceptions.FailedToCreateBranchException;
 import logic.manager.Exceptions.FailedToCreateRepositoryException;
 import logic.manager.Repository;
 import logic.manager.WCFileNode;
@@ -55,7 +56,7 @@ public class RepositoryServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String reqType=request.getParameter("reqType");
+        String reqType = request.getParameter("reqType");
             switch (reqType) {
                 case GET_REPOSITORY_PAGE_DATA:
                     String json = getRepositoryPageData();
@@ -99,6 +100,19 @@ public class RepositoryServlet extends HttpServlet {
                     response.getWriter().write(toJSON);
                     break;
             }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String username = SessionUtils.getUsername(request);
+        String sha1 = request.getParameter("sha1");
+        try {
+            uiManager.addNewBranch(username, sha1);
+        } catch (FailedToCreateBranchException e) {
+            e.printStackTrace();
+        } catch (FailedToCreateRepositoryException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>MAGit Hub</title>
-	<script src="../../common/jquery-3.4.1.min.js"></script>
-	<script src="../../common/context-path-helper.js"></script>
-	<link rel="stylesheet" href="repository.css">
-	<script src="repository.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>MAGit Hub</title>
+    <script src="../../common/jquery-3.4.1.min.js"></script>
+    <script src="../../common/context-path-helper.js"></script>
+    <link rel="stylesheet" href="repository.css">
+    <script src="repository.js"></script>
     <link href="../../common/bootstrap-treeview.min.css" rel="stylesheet"/>
     <script src="../../common/bootstrap-treeview.min.js"></script>
     <script src="../../common/bootstrap.min.js"></script>
@@ -16,95 +16,88 @@
 <body>
 
 <div class="container">
-<div class="alert alert-success alert-dismissable" id="successAlert" role="alert">
-    <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
-    Success! File changes were saved to the server
-</div>
+    <div class="alert alert-success alert-dismissable" id="successAlert" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true"></button>
+        Success! File changes were saved to the server
+    </div>
 
 </div>
 
 <div class="content">
-<div class="container-fluid">
-    <h1>MAGit Hub</h1>
-    <ul>
-        <li><a href="#createBranch">Create Branch</a></li>
-        <li><a href="">Checkout</a></li>
-        <li><a href="#UpdateWC">Update WC</a></li>
-        <li><a href="../users/users.html">Back</a></li>
-        <li><a href="../../users/logout">Logout</a></li>
-    </ul>
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-9">
-                <h3>Branches</h3>
-                <ul class="list-group" id="branchesList">
-                </ul>
-            </div>
-            <div class="col-3">
-                <div class="form-group">
-                    <input id="createBranch" type="submit" class="btn btn-primary pull-right" value="Create Branch">
-                    <input id=checkout type="submit" class="btn btn-primary pull-right" value="Checkout">
+        <h1>MAGit Hub</h1>
+        <ul>
+            <li><a href="#UpdateWC">Update WC</a></li>
+            <li><a href="../users/users.html">Back</a></li>
+            <li><a href="../../users/logout">Logout</a></li>
+        </ul>
+        <div class="container-fluid">
+            <div class="row" style="background-color: lightcyan;" >
+                <div class="col-12">
+                    <h3>Branches</h3>
+                    <ul class="list-group" id="branchesList">
+                    </ul>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-9">
-                <br>
-                <h3>Head Branch Commits</h3>
-                <table class="table table-hover" id="commitsTable">
-                    <thead>
-                    <tr>
-                        <th>SHA1</th>
-                        <th>Message</th>
-                        <th>Creation Date</th>
-                        <th>Created By</th>
-                        <th>Branches</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+            <br>
+            <div class="row" style="background-color: lightyellow;" >
+                <div class="col-9">
+                    <br>
+                    <h3>Head Branch Commits</h3>
+                    <table class="table table-hover" id="commitsTable">
+                        <thead>
+                        <tr>
+                            <th>SHA1</th>
+                            <th>Message</th>
+                            <th>Creation Date</th>
+                            <th>Created By</th>
+                            <th>Branches</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-3">
+                    <br>
+                    <h3>Commit Files</h3>
+                    <table class="table table-hover" id="commitFilesTable">
+                        <thead>
+                        <tr>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="col-3">
-                <br>
-                <h3>Commit Files</h3>
-                <table class="table table-hover" id="commitFilesTable">
-                    <thead>
-                    <tr>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <br>
-        <div class="row">
-            <div class="col-3" id="UpdateWC">
-                <br>
-                <h3>Working Copy Area</h3>
-                <h5>Last Commit Files</h5>
+            <br>
+            <div class="row" style="background-color: lightcyan;">
+                <div class="col-3" id="UpdateWC">
+                    <h3>Working Copy Area</h3>
+                    <h5>Last Commit Files</h5>
                     <div id="files-tree" class="treeview w-20 border"></div>
                 </div>
                 <div class="col-3">
                     <button type="button" class="btn btn-primary" id="addFileBtn">Add New File</button>
                 </div>
-            <div class="col-3">
-                <div class="card" style="width: 40rem;" id="openChangesCard">
-                    <h5 class="card-header">WC Open Changes</h5>
-                    <div class="card-body">
-                        <h5 class="card-title" id="newFilesTitle">New Files</h5>
-                        <ul class="list-group list-group-flush" id="newFilesList"></ul><br>
-                        <h5 class="card-title" id="modifiedFilesTitle">Modified Files</h5>
-                        <ul class="list-group list-group-flush" id="modifiedFilesList"></ul><br>
-                        <h5 class="card-title" id="deletedFilesTitle">Deleted Files</h5>
-                        <ul class="list-group list-group-flush" id="deletedFilesList"></ul><br>
-                        <button type="button" class="btn btn-primary" id="commitBtn">Commit</button>
+                <div class="col-3">
+                    <div class="card" style="width: 30rem;" id="openChangesCard">
+                        <h5 class="card-header">WC Open Changes</h5>
+                        <div class="card-body">
+                            <h5 class="card-title" id="newFilesTitle">New Files</h5>
+                            <ul class="list-group list-group-flush" id="newFilesList"></ul><br>
+                            <h5 class="card-title" id="modifiedFilesTitle">Modified Files</h5>
+                            <ul class="list-group list-group-flush" id="modifiedFilesList"></ul><br>
+                            <h5 class="card-title" id="deletedFilesTitle">Deleted Files</h5>
+                            <ul class="list-group list-group-flush" id="deletedFilesList"></ul><br>
+                            <button type="button" class="btn btn-primary" id="commitBtn">Commit</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
+
         <!-- WC Files Modal -->
         <div class="modal fade" id="fileContentModal" role="dialog">
             <div class="modal-dialog modal-lg">
@@ -129,8 +122,7 @@
         </div>
 
         <!-- Full Height Modal Right -->
-        <div class="modal fade right" tabindex="-1" role="dialog"
-             aria-hidden="true" id="addFileModal">
+        <div class="modal fade right" tabindex="-1" role="dialog" aria-hidden="true" id="addFileModal">
             <div class="modal-dialog modal-full-height modal-bottom" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -151,7 +143,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 </body>

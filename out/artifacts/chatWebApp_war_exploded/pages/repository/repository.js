@@ -186,6 +186,24 @@ function showCommits(commits){
     }
 }
 
+$(document).on('click', '#createBranch', function (event) {
+    event.preventDefault();
+    $.ajax({
+        method: 'PUT',
+        data: "lalala",
+        url: "repo",
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            alert("successs");
+        }
+    });
+});
+
 $(document).on('click', '#editBtn', function (event) {
     event.preventDefault();
     var $modal = $('#fileContentModal');
