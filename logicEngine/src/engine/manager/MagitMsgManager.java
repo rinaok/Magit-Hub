@@ -32,7 +32,10 @@ public class MagitMsgManager {
         return null;
     }
 
-    public int getVersion() {
-        return magitDataList.size();
+    public int getVersion(String user) {
+        if(magitDataList.containsKey(user))
+            return magitDataList.get(user).size();
+        else
+            return 0;
     }
 }

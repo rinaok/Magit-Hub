@@ -61,7 +61,7 @@ function appendMsgEntry(index, entry){
 }
 
 function createMsgEntry (entry){
-    entry.message = entry.message.replace (":)", "<img class='smiley-image' src='../../common/images/smiley.png'/>");
+    //entry.message = entry.message.replace (":)", "<img class='smiley-image' src='../../common/images/smiley.png'/>");
     return $("<span class=\"success\">").append(entry.timestamp + "> " + entry.message);
 }
 

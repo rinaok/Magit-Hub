@@ -41,7 +41,7 @@ public class MessagesServlet extends HttpServlet {
         int msgManagerVersion = 0;
         List<SingleMessageEntry> msgEntries;
         synchronized (getServletContext()) {
-            msgManagerVersion = magitManager.getVersion();
+            msgManagerVersion = magitManager.getVersion(username);
             msgEntries = magitManager.getMessagesEntries(msgVersion, username);
         }
 
