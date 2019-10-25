@@ -534,7 +534,6 @@ public class Engine {
         Utils.createTxtFile(magitRepo + "\\" + Environment.BRANCHES, branchName, headCommit);
         Branch newBranch = new Branch(head, branchName);
         newBranch.setCommitSha1(headCommit);
-        setBaseBranch(newBranch);
         branchesManager.addItem(newBranch);
     }
 
@@ -964,11 +963,4 @@ public class Engine {
         return compareFiles(currentCommit, prevCommit);
     }
 
-    public void setBaseBranch(Branch newBranch){
-        for(Branch branch : branchesManager.getBranches()){
-            if(branch.getHead().createHashCode().equals(newBranch.getHead().createHashCode()))
-                if(branch.getIsRemote())
-                    newBranch.setBaseBranch(branch);
-        }
-    }
 }

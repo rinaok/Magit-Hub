@@ -35,7 +35,7 @@ $(function() { // onload...do
             showWCFiles(wc);
             showOpenChanges();
             showCollaborationOptions(r.isForked);
-            //fillBranchesToPush(branches);
+            fillBranchesToPR(branches);
             //$('#dropdownMenuLink').dropdown();
         }
     })
@@ -46,12 +46,14 @@ function showCollaborationOptions(isForked){
     if(isForked){
         document.getElementById("push").disabled = false;
         document.getElementById("pull").disabled = false;
+        document.getElementById("pullRequest").disabled = false;
     }
     else{
         document.getElementById("collaborationArea").innerHTML = "Collaboration options are unavailable " +
             "for this repository since it is not forked";
         document.getElementById("push").disabled = true;
         document.getElementById("pull").disabled = true;
+        document.getElementById("pullRequest").disabled = true;
     }
 }
 
@@ -426,11 +428,48 @@ $(document).on('click', '#commitBtn', function (event) {
     }
 });
 
+$(document).on('click', '#pullRequest', function (event) {
+    $('#pullRequestModal').modal('show');
 
-function fillBranchesToPush(branches){
-    var listOfBranches = $('#branchListToPush');
-    listOfBranches.empty();
-    for (var i = 0; i < files.length; i++) {
-        list.append("<li class='list-group-item'>" + files[i] + "</li>");
+    // if (msg != null && msg != "") {
+    //     var data = "reqType=" + COMMIT + "&msg=" + msg;
+    //     $.ajax({
+    //         url: 'wc',
+    //         type: 'POST',
+    //         data: data,
+    //         error: function (e) {
+    //             alert(e.response);
+    //         },
+    //         success: function (response) {
+    //             $("#successAlert").show();
+    //             setTimeout(function () {
+    //                 $("#successAlert").hide();
+    //             }, 2000);
+    //             $('#addFileModal').modal('hide');
+    //             showOpenChanges();
+    //             refreshWC();
+    //             location.reload();
+    //         }
+    //     });
+    // }
+});
+
+
+function fillBranchesToPR(branches){
+    var targetBranches = $('#targetBranches');
+    targetBranches.empty();
+    for (var i = 0; i < branches.length; i++) {
+        if(branches[i].tracking && !branches[i].isRemote)
+            targetBranches.append("<a href=\"#\" class='list-group-item list-group-item-action data-toggle=\"list\"'>" + branches[i].name + "</a>");
+    }
+
+    var baseBranches = $('#baseBranches');
+    for (var i = 0; i < branches.length; i++) {
+        if(branches[i].tracking || branches[i].isRemote)
+            baseBranches.append("<a href=\"#\" class='list-group-item list-group-item-action data-toggle=\"list\"'>" + branches[i].name + "</a>");
     }
 }
+
+jQuery("a.list-group-item").click(function (e) {
+    jQuery(this).addClass('active').siblings().removeClass('active');
+});

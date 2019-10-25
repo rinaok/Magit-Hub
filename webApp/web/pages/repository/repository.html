@@ -28,13 +28,6 @@
         <h1>MAGit Hub</h1>
         <ul>
             <li><a href="#UpdateWC">Update WC</a></li>
-            <!--li class="dropdown">
-                <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Collaboration<span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">Pull</a></li>
-                    <li><a href="#">Push</a></li>
-                </ul>
-            </li-->
             <li><a href="#collaboration">Collaboration</a></li>
             <li><a href="../users/users.html">Back</a></li>
             <li><a href="../../users/logout">Logout</a></li>
@@ -117,6 +110,7 @@
                     <br>
                     <button type="button" class="btn btn-primary" id="pull" disabled>Pull</button>
                     <button type="button" class="btn btn-primary" id="push" disabled>Push</button>
+                    <button type="button" class="btn btn-primary" id="pullRequest" disabled>Pull Request</button>
                 </div>
 
             </div>
@@ -168,13 +162,13 @@
             </div>
         </div>
 
-        <!-- Push Modal -->
-        <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="pushModal">
+        <!-- Pull Request Modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="pullRequestModal">
             <div class="modal-dialog modal-full-height modal-bottom" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title w-100">Push Branch</h4>
-                        <h8 class="modal-title">Choose Branch to Push to Remote Repository</h8>
+                        <h4 class="modal-title w-100">Pull Request</h4>
+                        <h8 class="modal-title">Create a Pull Request for The Remote Repository</h8>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
