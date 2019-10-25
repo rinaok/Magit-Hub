@@ -161,7 +161,7 @@ public class RepositoryServlet extends HttpServlet {
                 e.printStackTrace();
             }
 
-            if(username != currRepo.getUsername()){
+            if(!username.equals(currRepo.getUsername())){
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 response.getWriter().write("not current user's repository");
                 response.flushBuffer();

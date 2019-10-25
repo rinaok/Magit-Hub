@@ -45,6 +45,7 @@ li a:hover:not(.active) {
 
 #msgarea {
     height: 70px;
-    background-color: lightgrey;
+    border: 1px solid #e7e7e7;
+    background-color: #f3f3f3;
     overflow-y:auto;
 }

@@ -33,7 +33,6 @@ $(function() { // onload...do
             document.getElementById('activeUser').innerHTML = r;
         }
     });
-
     $('#usersList').change(onUserListChanged);
 });
 
@@ -233,6 +232,8 @@ function fork(repoOwner, repoName){
 function updateRepositoriesTable(r){
     var owner = $('#usersList').val()[0];
     var loggedInUser = document.getElementById('activeUser').innerHTML;
+    if(owner == null)
+        owner = loggedInUser;
     var htmlString = '<tr class="child" style=\"cursor:pointer\"><td>'
         + r["Name"] + '</td><td>'
         + r["ActiveBranch"] + '</td><td>'
@@ -278,3 +279,12 @@ function updateRepositoriesTable(r){
         }
     }
 }
+
+$(function() {
+    var interval = setInterval(function() {
+        if(document.getElementById("activeUser").innerHTML) {
+            clearInterval(interval);
+            getRepositoryByName(document.getElementById("activeUser").innerHTML);
+        }
+    }, 1000);
+});
