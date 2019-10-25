@@ -130,6 +130,24 @@ public class RepositoryServlet extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+        String[] data = br.readLine().split("&");
+        String branchName = data[0];
+        try {
+            uiManager.deleteBranch(branchName);
+            List<Branch> branches = uiManager.getBranches();
+            String json = new Gson().toJson(branches);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(json);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Handles the HTTP <code>POST</code> method.
      *
