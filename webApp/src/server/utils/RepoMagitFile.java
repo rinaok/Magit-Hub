@@ -1,9 +1,11 @@
 package server.utils;
 
+import engine.manager.PullRequest;
 import logic.manager.WCFileNode;
 import logic.modules.Branch;
 import logic.modules.Commit;
 
+import javax.swing.text.html.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +34,11 @@ public class RepoMagitFile {
     private List<Branch> branches;
     private List<ExtendedCommit> commits;
     private List<WCFileNode> wcFiles;
+    private List<PullRequest> pullRequests;
     private boolean isForked;
 
-    public RepoMagitFile(List<Branch> branches, List<Commit> commits, List<WCFileNode> wcFiles, boolean isForked){
+    public RepoMagitFile(List<Branch> branches, List<Commit> commits, List<WCFileNode> wcFiles, boolean isForked,
+                         List<PullRequest> pullRequests){
         this.branches = branches;
         this.commits = new ArrayList<>();
         for(Commit commit : commits){
@@ -43,6 +47,7 @@ public class RepoMagitFile {
         setCommitSha1();
         this.wcFiles = wcFiles;
         this.isForked = isForked;
+        this.pullRequests = pullRequests;
     }
 
     private void setCommitSha1(){

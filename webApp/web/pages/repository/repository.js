@@ -11,6 +11,7 @@ var COMMIT = 7;
 
 var PULL = 0;
 var PUSH = 1;
+var PR = 2;
 
 
 $(function() { // onload...do
@@ -36,11 +37,30 @@ $(function() { // onload...do
             showOpenChanges();
             showCollaborationOptions(r.isForked);
             fillBranchesToPR(branches);
-            //$('#dropdownMenuLink').dropdown();
+            showPullRequests(r.pullRequests);
         }
     })
 });
 
+function showPullRequests(pullRequests) {
+    var branchesList = $('#branchesList');
+    for (var i = 0 ; i < pullRequests.length; i++) {
+        var targetBranch = pullRequests[i].targetBranch;
+        var colorClass = "<li class='list-group-item list-group-item-light'>";
+        branchesList.append(
+            colorClass + "<span class = 'badge badge-primary'>Pull Request</span>" +
+            "<div style='max-width: fit-content; max-height: 10px;'>" +
+            "<h6><b>Target Branch </b>" + targetBranch + "</h6>" +
+            "<p><b>Base Branch </b>" + pullRequests[i].baseBranch + "</p>" +
+            "<p><b>Message </b>" + pullRequests[i].msg + "</p>" +
+            "</div>" +
+            "<div>" +
+            "<input id=\"AcceptPR\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Accept PR\" style='float: right; margin-right: 10px;'>" +
+            "<input id=\"Details\" type=\"submit\" class=\"btn btn-info pull-right\" value=\"Details\" style=\"float: right;\">" +
+            "</div>" +
+            "</div>");
+    }
+}
 
 function showCollaborationOptions(isForked){
     if(isForked){
@@ -129,13 +149,15 @@ function showBranchesData(branches){
     for (var i = 0 ; i < branches.length; i++) {
         var branch = branches[i];
         var colorClass = "<li class='list-group-item list-group-item-light'>";
+        var Head = "";
         if(branch.isHead) {
             colorClass = "<li class='list-group-item list-group-item-primary'>";
+            Head = " || Head Branch";
         }
         branchesList.append(
             colorClass +
             "<div style='max-width: fit-content; max-height: 10px;'>" +
-            "<h6>" + branch.name + "  ||  Head Branch</h6>" +
+            "<h6>" + branch.name + Head +"</h6>" +
             "<p>" + branch.commitSha1 + "</p>" +
             "</div>" +
             "<div>" +
@@ -191,7 +213,7 @@ function showCommitFiles(files) {
     files.forEach(function(row){
             tableBody = tableBody + "<tr>";
             for (var j = 0; j < table.rows.length; j++){
-                tableBody = tableBody + "<td><b>Name </b>" + row["name"] + "<br><b>Type</b>" +
+                tableBody = tableBody + "<td><b>Name </b>" + row["name"] + "<br><b>Type </b>" +
                 row["type"] + "<br><b>SHA1 </b>" + row["sha1"] + "<br><b>Modified By </b>" + row["lastModifier"] +
                     "<br><b>Modification Date </b><" + row["modificationDate"] + "</td>";
             }
@@ -452,28 +474,45 @@ $(document).on('click', '#commitBtn', function (event) {
 
 $(document).on('click', '#pullRequest', function (event) {
     $('#pullRequestModal').modal('show');
+});
 
-    // if (msg != null && msg != "") {
-    //     var data = "reqType=" + COMMIT + "&msg=" + msg;
-    //     $.ajax({
-    //         url: 'wc',
-    //         type: 'POST',
-    //         data: data,
-    //         error: function (e) {
-    //             alert(e.response);
-    //         },
-    //         success: function (response) {
-    //             $("#successAlert").show();
-    //             setTimeout(function () {
-    //                 $("#successAlert").hide();
-    //             }, 2000);
-    //             $('#addFileModal').modal('hide');
-    //             showOpenChanges();
-    //             refreshWC();
-    //             location.reload();
-    //         }
-    //     });
-    // }
+
+$(document).on('click', '#submitPRBtn', function (event) {
+    var branches = document.getElementsByClassName("list-group-item active");
+    var target;
+    var base;
+    if(branches.length == 2){
+        for(var i = 0; i < 2; i++){
+            if(branches[i].parentElement.id == "targetBranches"){
+                target = branches[i].innerHTML;
+            }
+            else if (branches[i].parentElement.id == "baseBranches"){
+                base = branches[i].innerHTML;
+            }
+        }
+        if(base != null && target != null){
+            var msg = document.getElementById("prMsg").innerHTML;
+            var data = "reqType=" + PR + "&target=" + target.replace(/\\/g,"//") + "&base=" + base.replace(/\\/g,"//") + "&msg=" + msg;
+            $.ajax({
+                method: 'GET',
+                data: data,
+                url: "collaboration",
+                processData: false, // Don't process the files
+                contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+                timeout: 4000,
+                error: function (e) {
+                    alert(e.responseText);
+                },
+                success: function (r) {
+                    alert(r);
+                    location.reload();
+                }
+            });
+        }
+    }
+    else{
+        alert("Please select base and target branches");
+    }
 });
 
 
@@ -482,16 +521,21 @@ function fillBranchesToPR(branches){
     targetBranches.empty();
     for (var i = 0; i < branches.length; i++) {
         if(branches[i].tracking && !branches[i].isRemote)
-            targetBranches.append("<a href=\"#\" class='list-group-item list-group-item-action data-toggle=\"list\"'>" + branches[i].name + "</a>");
+            targetBranches.append("<a href=\"#\" class='list-group-item list-group-item-action' data-toggle=\"list\"'>" + branches[i].name + "</a>");
     }
 
     var baseBranches = $('#baseBranches');
     for (var i = 0; i < branches.length; i++) {
         if(branches[i].tracking || branches[i].isRemote)
-            baseBranches.append("<a href=\"#\" class='list-group-item list-group-item-action data-toggle=\"list\"'>" + branches[i].name + "</a>");
+            baseBranches.append("<a href=\"#\" class='list-group-item list-group-item-action' data-toggle=\"list\"'>" + branches[i].name + "</a>");
     }
 }
 
-jQuery("a.list-group-item").click(function (e) {
-    jQuery(this).addClass('active').siblings().removeClass('active');
-});
+$(function(){
+    $('.list-group li').click(function(e) {
+        e.preventDefault()
+        $that = $(this);
+        $that.parent().find('a').removeClass('active');
+        $that.addClass('active');
+    });
+})

@@ -614,7 +614,7 @@ public class Engine {
         {
             WCFileNode node = new WCFileNode(obj[fileNameIndex], findPath(obj[sha1Index], rootSha1));
             rootLevel[0].add(node);
-            setFileStatus(node);
+            //setFileStatus(node);
             if(obj[fileTypeIndex].equals(FileType.DIRECTORY.toString())){
                 rootLevel[0] = rootLevel[0].get(rootLevel[0].size() - 1).getNodes();
             }
@@ -961,6 +961,12 @@ public class Engine {
 
     private List<String> getEditedFiles(Map<String, String> currentCommit, Map<String, String> prevCommit) throws IOException {
         return compareFiles(currentCommit, prevCommit);
+    }
+
+    public String getRemoteRepositoryOwner() throws Exception {
+        if(collaborationHandler == null)
+            throw new Exception("Collaboration handler is not initialized!");
+        return collaborationHandler.getRemoteRepositoryOwner();
     }
 
 }

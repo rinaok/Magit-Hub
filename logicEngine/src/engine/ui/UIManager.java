@@ -341,4 +341,8 @@ public class UIManager {
     public boolean isForked(){
         return systemEngine.getRepository().isLocalRepository();
     }
+
+    public String getPullRequestUser() throws Exception {
+        return systemEngine.getRemoteRepositoryOwner();
+    }
 }

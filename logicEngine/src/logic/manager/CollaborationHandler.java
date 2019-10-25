@@ -85,10 +85,14 @@ public class CollaborationHandler {
     }
 
     public void updateBranches() throws IOException, FailedToCreateRepositoryException, ParserConfigurationException {
+        String remoteBranchesFolder = localRepository.getPath() + "\\" + Environment.MAGIT + "\\" + Environment.BRANCHES + "\\" +
+                remoteRepository.getName();
         for(Branch branch : engine.getBranchesManager().getBranches()){
             if(!branch.getName().contains(remoteRepository.getName())) {
-                branch.setTracking(remoteRepository.getName() + "\\" + branch.getName());
-                branch.setNotRemote();
+                if(new File(remoteBranchesFolder + "\\" + branch.getName() + ".txt").exists()) {
+                    branch.setTracking(remoteRepository.getName() + "\\" + branch.getName());
+                    branch.setNotRemote();
+                }
             }
             else
                 branch.remoteTracking();
@@ -547,6 +551,10 @@ public class CollaborationHandler {
                  }
              }
          }
+     }
+
+     public String getRemoteRepositoryOwner(){
+        return remoteRepository.getUsername();
      }
 
 }

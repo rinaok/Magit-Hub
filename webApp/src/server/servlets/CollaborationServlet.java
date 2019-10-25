@@ -1,6 +1,8 @@
 package server.servlets;
 
 import com.google.gson.Gson;
+import engine.manager.PRManager;
+import engine.manager.PullRequest;
 import engine.ui.UIManager;
 import server.utils.ServletUtils;
 
@@ -15,7 +17,27 @@ import java.io.IOException;
 public class CollaborationServlet extends HttpServlet {
     private static final String PULL = "0";
     private static final String PUSH = "1";
+    private static final String PR = "2";
     private UIManager uiManager;
+    private PRManager prManager;
+
+    private void addPR(HttpServletRequest request){
+        prManager = ServletUtils.getPRManager(getServletContext());
+        String targetBranch = request.getParameter("target");
+        targetBranch = targetBranch.replace("/","\\");
+        String baseBranch= request.getParameter("base");
+        baseBranch = baseBranch.replace("/","\\");
+        String msg = request.getParameter("msg");
+        if(targetBranch != null && baseBranch != null) {
+            try {
+                String owner = uiManager.getPullRequestUser();
+                prManager.addPR(new PullRequest(targetBranch, baseBranch, msg), owner);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -53,6 +75,9 @@ public class CollaborationServlet extends HttpServlet {
                         response.setCharacterEncoding("UTF-8");
                         response.getWriter().write(toJSON);
                     }
+                    break;
+                case PR:
+                    addPR(request);
                     break;
             }
         }

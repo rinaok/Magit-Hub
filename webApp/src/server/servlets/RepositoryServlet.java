@@ -1,6 +1,8 @@
 package server.servlets;
 
 import com.google.gson.Gson;
+import engine.manager.PRManager;
+import engine.manager.PullRequest;
 import engine.ui.UIManager;
 import logic.manager.Exceptions.FailedToCreateBranchException;
 import logic.manager.Exceptions.FailedToCreateRepositoryException;
@@ -34,6 +36,7 @@ public class RepositoryServlet extends HttpServlet {
 
     private UIManager uiManager;
     private Repository currRepo;
+    private PRManager prManager;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -60,7 +63,8 @@ public class RepositoryServlet extends HttpServlet {
             String reqType = request.getParameter("reqType");
             switch (reqType) {
                 case GET_REPOSITORY_PAGE_DATA:
-                    String json = getRepositoryPageData();
+                    String username = SessionUtils.getUsername(request);
+                    String json = getRepositoryPageData(username);
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write(json);
@@ -195,7 +199,7 @@ public class RepositoryServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private String getRepositoryPageData(){
+    private String getRepositoryPageData(String username){
         try{
             List<Branch> branches = uiManager.getBranches();
             List<WCFileNode> wcFiles = new ArrayList<>();
@@ -212,7 +216,9 @@ public class RepositoryServlet extends HttpServlet {
                 e.printStackTrace();
             }
             List<Commit> commits = new ArrayList<>(uiManager.getCommitsMap().values());
-            RepoMagitFile magitFile = new RepoMagitFile(branches, commits, wcFiles, uiManager.isForked());
+            prManager = ServletUtils.getPRManager(getServletContext());
+            List<PullRequest> pullRequests = prManager.getPullRequests(username);
+            RepoMagitFile magitFile = new RepoMagitFile(branches, commits, wcFiles, uiManager.isForked(), pullRequests);
             return new Gson().toJson(magitFile);
         }
         catch (Exception e){
