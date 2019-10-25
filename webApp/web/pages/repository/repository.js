@@ -43,7 +43,12 @@ $(function() { // onload...do
 });
 
 function showPullRequests(pullRequests) {
-    var branchesList = $('#branchesList');
+    var pullRequestList = $('#pullRequestList');
+    pullRequestList.empty();
+    if(pullRequests == null || pullRequests.length == 0){
+        document.getElementById("prArea").innerHTML = "No pull requests";
+        return;
+    }
     for (var i = 0 ; i < pullRequests.length; i++) {
         var targetBranch = pullRequests[i].targetBranch;
         var colorClass = "<li class='list-group-item list-group-item-light'>";
@@ -55,7 +60,9 @@ function showPullRequests(pullRequests) {
             "<p><b>Message </b>" + pullRequests[i].msg + "</p>" +
             "</div>" +
             "<div>" +
-            "<input id=\"AcceptPR\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Accept PR\" style='float: right; margin-right: 10px;'>" +
+            "<input id=\"deletePR\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Reject\" style='float: right; margin-right: 10px;'>" +
+            "<input id=\"checkoutPR\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Checkout\" style='float: right;'>" +
+            "<input id=\"AcceptPR\" type=\"submit\" class=\"btn btn-success pull-right\" value=\"Accept\" style='float: right;'>" +
             "<input id=\"Details\" type=\"submit\" class=\"btn btn-info pull-right\" value=\"Details\" style=\"float: right;\">" +
             "</div>" +
             "</div>");
@@ -492,11 +499,12 @@ $(document).on('click', '#submitPRBtn', function (event) {
         }
         if(base != null && target != null){
             var msg = document.getElementById("prMsg").innerHTML;
-            var data = "reqType=" + PR + "&target=" + target.replace(/\\/g,"//") + "&base=" + base.replace(/\\/g,"//") + "&msg=" + msg;
+            var data = "reqType=" + PR + "&target=" + encodeURIComponent(target) + "&base=" + encodeURIComponent(base) + "&msg=" + msg;
             $.ajax({
                 method: 'GET',
                 data: data,
                 url: "collaboration",
+                dataType: 'json',
                 processData: false, // Don't process the files
                 contentType: false, // Set content type to false as jQuery will tell the server its a query string request
                 timeout: 4000,

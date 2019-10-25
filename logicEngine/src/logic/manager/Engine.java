@@ -1,4 +1,5 @@
 package logic.manager;
+import engine.manager.PullRequest;
 import logic.manager.Exceptions.FailedToCreateBranchException;
 import logic.manager.Exceptions.FailedToCreateRepositoryException;
 import logic.manager.Exceptions.FailedToMergeException;
@@ -627,45 +628,28 @@ public class Engine {
         return tree;
     }
 
-    private void getWCJSON(Folder rootFolder, final List<WCFileNode>[] rootLevel) throws IOException {
-        for(Map.Entry<String, FileData> gitFile : rootFolder.getIncludedFiles().entrySet()){
-            String filePath = getFilePathInWC(gitFile.getValue().getName());
-            if(filePath != null) {
-                WCFileNode node = new WCFileNode(gitFile.getValue().getName(), filePath);
-                rootLevel[0].add(node);
-                if (gitFile.getValue().getType().toString().equals(FileType.FILE.toString())) {
-                    setFileStatus(node);
-                }
-                if (gitFile.getValue().getType().toString().equals(FileType.DIRECTORY.toString())) {
-                    rootLevel[0] = rootLevel[0].get(rootLevel[0].size() - 1).getNodes();
-                    getWCJSON((Folder) gitFile.getValue().getFilePointer(), rootLevel);
-                }
-            }
-        }
-    }
-
-    private void setFileStatus(WCFileNode node) throws IOException {
-        List<String> edited = getEditedFiles();
-        List<String> newFiles = getNewFiles();
-        List<String> deleted = getDeletedFiles();
-        if(edited.contains(node.getFilePath()))
-            node.setFileStatus(FileStatus.MODIFIED);
-        else if(deleted.contains(node.getFilePath()))
-            node.setFileStatus(FileStatus.DELETED);
-        else if(newFiles.contains(node.getFilePath()))
-            node.setFileStatus(FileStatus.NEW);
-    }
-
-    private String getFilePathInWC(String fileName){
-        WorkingCopy wc = repositoriesManager.getActive().getWorkingCopy();
-        for(String path : wc.getWcFiles()){
-            File f = new File(path);
-            String name = f.getName();
-            if(name.equals(fileName))
-                return path;
-        }
-        return null;
-    }
+//    private void setFileStatus(WCFileNode node) throws IOException {
+//        List<String> edited = getEditedFiles();
+//        List<String> newFiles = getNewFiles();
+//        List<String> deleted = getDeletedFiles();
+//        if(edited.contains(node.getFilePath()))
+//            node.setFileStatus(PRStatus.MODIFIED);
+//        else if(deleted.contains(node.getFilePath()))
+//            node.setFileStatus(PRStatus.DELETED);
+//        else if(newFiles.contains(node.getFilePath()))
+//            node.setFileStatus(PRStatus.NEW);
+//    }
+//
+//    private String getFilePathInWC(String fileName){
+//        WorkingCopy wc = repositoriesManager.getActive().getWorkingCopy();
+//        for(String path : wc.getWcFiles()){
+//            File f = new File(path);
+//            String name = f.getName();
+//            if(name.equals(fileName))
+//                return path;
+//        }
+//        return null;
+//    }
 
     public  List<Map<String, String>> commitFilesDetails (String commitSha1) throws FailedToCreateRepositoryException, IOException, ParserConfigurationException {
         if(branchesManager.getActive().getHead().getRootSha1() == null && !firstCommit)
@@ -925,18 +909,38 @@ public class Engine {
             if(secondPrevCommit != null) {
                 prevCommitDelta = new CommitDelta(rootCommit.getPreviousCommit(), rootCommit.getSecondPreviousCommit());
                 pathToSha1SecondPrevCommit = getCommitPathToSha1(secondPrevCommit);
-                prevCommitDelta.setDeletedFilesSecondCommit(getDeletedFiles(pathToSha1CurrentCommit, pathToSha1SecondPrevCommit));
-                prevCommitDelta.setEditedFiledSecondCommit(getEditedFiles(pathToSha1CurrentCommit, pathToSha1SecondPrevCommit));
-                prevCommitDelta.setNewFilesSecondCommit(getNewFiles(pathToSha1CurrentCommit, pathToSha1SecondPrevCommit));
+
+                List<String> deletedFilePath = getDeletedFiles(pathToSha1CurrentCommit, pathToSha1PreviousCommit);
+                prevCommitDelta.setDeletedFilesSecondCommit(getSha1ToPathMap(deletedFilePath, pathToSha1CurrentCommit));
+
+                List<String> editedFilePath = getEditedFiles(pathToSha1CurrentCommit, pathToSha1PreviousCommit);
+                prevCommitDelta.setEditedFiledSecondCommit(getSha1ToPathMap(editedFilePath, pathToSha1CurrentCommit));
+
+                List<String> newFilesPath = getEditedFiles(pathToSha1CurrentCommit, pathToSha1PreviousCommit);
+                prevCommitDelta.setNewFilesSecondCommit(getSha1ToPathMap(editedFilePath, pathToSha1CurrentCommit));
             }
             else
                 prevCommitDelta = new CommitDelta(rootCommit.getPreviousCommit());
-            prevCommitDelta.setDeletedFiles(getDeletedFiles(pathToSha1CurrentCommit, pathToSha1PreviousCommit));
-            prevCommitDelta.setEditedFiled(getEditedFiles(pathToSha1CurrentCommit, pathToSha1PreviousCommit));
-            prevCommitDelta.setNewFiles(getNewFiles(pathToSha1CurrentCommit, pathToSha1PreviousCommit));
-        }
+            List<String> deletedFilePath = getDeletedFiles(pathToSha1CurrentCommit, pathToSha1SecondPrevCommit);
+            prevCommitDelta.setDeletedFilesSecondCommit(getSha1ToPathMap(deletedFilePath, pathToSha1CurrentCommit));
+
+            List<String> editedFilePath = getEditedFiles(pathToSha1CurrentCommit, pathToSha1SecondPrevCommit);
+            prevCommitDelta.setEditedFiledSecondCommit(getSha1ToPathMap(editedFilePath, pathToSha1CurrentCommit));
+
+            List<String> newFilesPath = getEditedFiles(pathToSha1CurrentCommit, pathToSha1SecondPrevCommit);
+            prevCommitDelta.setNewFilesSecondCommit(getSha1ToPathMap(editedFilePath, pathToSha1CurrentCommit));        }
 
         return prevCommitDelta;
+    }
+
+    private Map<String, String> getSha1ToPathMap(List<String> filePaths, Map<String, String> pathToSha1CurrentCommit){
+        Map<String, String> sha1ToPathMap = new HashMap<>();
+        for(String path : filePaths){
+            String sha1 = pathToSha1CurrentCommit.get(path);
+            sha1ToPathMap.put(sha1, path);
+        }
+
+        return sha1ToPathMap;
     }
 
     private Commit getCommitObject(String sha1) throws IOException, ParserConfigurationException {
@@ -969,4 +973,42 @@ public class Engine {
         return collaborationHandler.getRemoteRepositoryOwner();
     }
 
+    public void deltaCommitPR(PullRequest PR) throws IOException, ParserConfigurationException, FailedToCreateRepositoryException {
+        String base = PR.getBaseBranch();
+        String target = PR.getTargetBranch();
+        Map<String, String> newFiles = new HashMap<>();
+        Map<String, String> deletedFiles = new HashMap<>();
+        Map<String, String> editedFiles = new HashMap<>();
+        getCommitDelta(base, target, newFiles, deletedFiles, editedFiles);
+        PR.setCommitDelta(newFiles, deletedFiles, editedFiles);
+    }
+
+    private void getCommitDelta(String base, String target, Map<String, String> newFiles,
+                                Map<String, String> deletedFiles,Map<String, String> editedFiles) throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
+        Commit targetCommit = branchesManager.getBranch(target).getHead();
+        Commit baseCommit = branchesManager.getBranch(base).getHead();
+        while(!targetCommit.createHashCode().equals(baseCommit.createHashCode())) {
+            String t = targetCommit.createHashCode();
+            String b = baseCommit.createHashCode();
+            CommitDelta deltaCommit = getDeltaToPreviousCommit(targetCommit);
+            addMapToMap(newFiles, deltaCommit.getNewFiles());
+            addMapToMap(newFiles, deltaCommit.getNewFilesSecondCommit());
+            addMapToMap(editedFiles, deltaCommit.getEditedFiled());
+            addMapToMap(editedFiles, deltaCommit.getEditedFiledSecondCommit());
+            addMapToMap(deletedFiles, deltaCommit.getDeletedFiles());
+            addMapToMap(deletedFiles, deltaCommit.getDeletedFilesSecondCommit());
+            if(commitMapSha1.containsKey(targetCommit.getPreviousCommit()))
+                targetCommit = commitMapSha1.get(targetCommit.getPreviousCommit());
+            else
+                break;
+        }
+    }
+
+    private void addMapToMap(Map<String, String> origMap, Map<String, String> mapToCopy){
+        if(mapToCopy != null && origMap != null) {
+            for (Map.Entry<String, String> entry : mapToCopy.entrySet()) {
+                origMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+    }
 }

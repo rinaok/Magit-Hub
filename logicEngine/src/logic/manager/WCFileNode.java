@@ -33,7 +33,7 @@ public class WCFileNode {
         return nodes;
     }
 
-    public void setFileStatus(FileStatus fileStatus){
+    public void setFileStatus(PRStatus fileStatus){
         tags.add(fileStatus.toString());
     }
 
