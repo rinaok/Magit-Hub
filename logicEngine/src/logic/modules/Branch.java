@@ -17,6 +17,7 @@ public class Branch implements GitFile{
     private String trackingAfter;
     private boolean isHead;
     private Date creationDate;
+    private Branch baseBranch;
 
     public Branch(){
     }
@@ -31,6 +32,14 @@ public class Branch implements GitFile{
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setBaseBranch(Branch baseBranch){
+        this.baseBranch = baseBranch;
+    }
+
+    public Branch getBaseBranch(){
+        return baseBranch;
     }
 
     private void findCreationTime() throws ParseException {

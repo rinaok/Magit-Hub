@@ -9,6 +9,9 @@ var DELETE_FILE = 5;
 var NEW_FILE = 6;
 var COMMIT = 7;
 
+var PULL = 0;
+var PUSH = 1;
+
 
 $(function() { // onload...do
     $('#addFileModal').find('.modal-header h8').hide();
@@ -32,6 +35,7 @@ $(function() { // onload...do
             showWCFiles(wc);
             showOpenChanges();
             showCollaborationOptions(r.isForked);
+            //fillBranchesToPush(branches);
             //$('#dropdownMenuLink').dropdown();
         }
     })
@@ -52,9 +56,42 @@ function showCollaborationOptions(isForked){
 }
 
 $(document).on('click', '#pull', function (event) {
-
+    var data = "reqType=" + PULL;
+    $.ajax({
+        method: 'GET',
+        data: data,
+        url: "collaboration",
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            alert(r);
+            location.reload();
+        }
+    });
 });
 
+$(document).on('click', '#push', function (event) {
+    var data = "reqType=" + PUSH;
+    $.ajax({
+        method: 'GET',
+        data: data,
+        url: "collaboration",
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            alert(r);
+            location.reload();
+        }
+    });
+});
 
 function showOpenChanges(){
     var data = "reqType=" + GET_OPEN_CHANGES;
@@ -387,3 +424,12 @@ $(document).on('click', '#commitBtn', function (event) {
         });
     }
 });
+
+
+function fillBranchesToPush(branches){
+    var listOfBranches = $('#branchListToPush');
+    listOfBranches.empty();
+    for (var i = 0; i < files.length; i++) {
+        list.append("<li class='list-group-item'>" + files[i] + "</li>");
+    }
+}

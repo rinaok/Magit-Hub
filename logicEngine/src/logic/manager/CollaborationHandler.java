@@ -394,6 +394,19 @@ public class CollaborationHandler {
         return true;
     }
 
+    public void pushToRR() throws IOException {
+        String headBranch = getHeadBranch(localRepository.getPath());
+        String headCommit = Utils.readFile(new File(localRepository.getPath() + "\\" + Environment.MAGIT + "\\" +
+                Environment.BRANCHES + "\\" + headBranch + ".txt"));
+        Branch branch = engine.getBranchesManager().getBranch(headBranch);
+        if(branch.getBaseBranch() != null){
+            String baseCommit = branch.getHead().createHashCode();
+            while(!headCommit.equals(baseCommit)){
+
+            }
+        }
+    }
+
     private void pushToRemote() throws IOException, ParserConfigurationException, FailedToCreateRepositoryException {
         String headBranch = getHeadBranch(localRepository.getPath());
         String rtbCommit = Utils.readFile(new File(localRepository.getPath() + "\\" + Environment.MAGIT + "\\" +

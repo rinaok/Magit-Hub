@@ -533,6 +533,7 @@ public class Engine {
         Utils.createTxtFile(magitRepo + "\\" + Environment.BRANCHES, branchName, headCommit);
         Branch newBranch = new Branch(head, branchName);
         newBranch.setCommitSha1(headCommit);
+        setBaseBranch(newBranch);
         branchesManager.addItem(newBranch);
     }
 
@@ -871,6 +872,12 @@ public class Engine {
         return false;
     }
 
+    public boolean pushToRR() throws Exception {
+        if(collaborationHandler == null)
+            throw new Exception("Collaboration Handler is empty, is this a forked repository?");
+        collaborationHandler.apush();
+    }
+
     public void checkoutWithRTB(String branch) throws IOException, FailedToCreateRepositoryException, FailedToCreateBranchException, ParserConfigurationException {
         collaborationHandler.remoteTrackingBranchFromRemoteBranch(branch);
         checkout(branchesManager.getActive().getName(), false);
@@ -962,4 +969,11 @@ public class Engine {
         return compareFiles(currentCommit, prevCommit);
     }
 
+    public void setBaseBranch(Branch newBranch){
+        for(Branch branch : branchesManager.getBranches()){
+            if(branch.getHead().createHashCode().equals(newBranch.getHead().createHashCode()))
+                if(branch.getIsRemote())
+                    newBranch.setBaseBranch(branch);
+        }
+    }
 }
