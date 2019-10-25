@@ -59,6 +59,7 @@ b{
 
 #commitFilesTable{
     margin-left: 0px;
+    height: 300px;
     overflow-y: scroll;
     max-height: inherit;
     display: table-caption;

@@ -34,7 +34,7 @@ public class RepoMagitFile {
     private List<WCFileNode> wcFiles;
     private boolean isForked;
 
-    public RepoMagitFile(List<Branch> branches, List<Commit> commits, List<WCFileNode> wcFiles){
+    public RepoMagitFile(List<Branch> branches, List<Commit> commits, List<WCFileNode> wcFiles, boolean isForked){
         this.branches = branches;
         this.commits = new ArrayList<>();
         for(Commit commit : commits){
@@ -42,6 +42,7 @@ public class RepoMagitFile {
         }
         setCommitSha1();
         this.wcFiles = wcFiles;
+        this.isForked = isForked;
     }
 
     private void setCommitSha1(){

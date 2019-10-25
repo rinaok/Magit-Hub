@@ -194,7 +194,7 @@ public class RepositoryServlet extends HttpServlet {
                 e.printStackTrace();
             }
             List<Commit> commits = new ArrayList<>(uiManager.getCommitsMap().values());
-            RepoMagitFile magitFile = new RepoMagitFile(branches, commits, wcFiles);
+            RepoMagitFile magitFile = new RepoMagitFile(branches, commits, wcFiles, uiManager.isForked());
             return new Gson().toJson(magitFile);
         }
         catch (Exception e){
