@@ -238,7 +238,6 @@ public class RepositoryServlet extends HttpServlet {
             for(Map<String, String> file : commitFilesDetails){
                 commitFiles.add(new CommitFile(file));
             }
-            //return new Gson().toJson(commitFiles);
             return commitFiles;
         } catch (FailedToCreateRepositoryException e) {
             e.printStackTrace();

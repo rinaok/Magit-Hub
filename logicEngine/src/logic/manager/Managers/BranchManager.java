@@ -76,7 +76,9 @@ public class BranchManager implements ManagerInterface<Branch>{
     }
 
     public Branch getBranch(String branch){
-        return nameToBranchMap.get(branch);
+        if(nameToBranchMap.containsKey(branch))
+            return nameToBranchMap.get(branch);
+        return null;
     }
 
     public List<Map<String,String>> listOfBranches() {

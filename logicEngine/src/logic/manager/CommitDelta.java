@@ -1,15 +1,16 @@
 package logic.manager;
 import java.util.List;
+import java.util.Map;
 
 public class CommitDelta {
     private String commitSha1;
     private String secondCommitSha1;
-    private List<String> newFiles;
-    private List<String> editedFiled;
-    private List<String> deletedFiles;
-    private List<String> newFilesSecondCommit;
-    private List<String> editedFiledSecondCommit;
-    private List<String> deletedFilesSecondCommit;
+    private Map<String, String> newFiles;
+    private Map<String, String> editedFiled;
+    private Map<String, String> deletedFiles;
+    private Map<String, String> newFilesSecondCommit;
+    private Map<String, String> editedFiledSecondCommit;
+    private Map<String, String> deletedFilesSecondCommit;
 
     public CommitDelta(String commitSha1){
         this.commitSha1 = commitSha1;
@@ -27,27 +28,27 @@ public class CommitDelta {
         else return true;
     }
 
-    public void setNewFiles(List<String> newFiles){
+    public void setNewFiles(Map<String, String> newFiles){
         this.newFiles = newFiles;
     }
 
-    public void setEditedFiled(List<String> editedFiled){
+    public void setEditedFiled(Map<String, String> editedFiled){
         this.editedFiled = editedFiled;
     }
 
-    public void setDeletedFiles(List<String> deletedFiles){
+    public void setDeletedFiles(Map<String, String> deletedFiles){
         this.deletedFiles = deletedFiles;
     }
 
-    public List<String> getNewFiles(){
+    public Map<String, String> getNewFiles(){
         return newFiles;
     }
 
-    public List<String> getEditedFiled(){
+    public Map<String, String> getEditedFiled(){
         return editedFiled;
     }
 
-    public List<String> getDeletedFiles(){
+    public Map<String, String> getDeletedFiles(){
         return deletedFiles;
     }
 
@@ -59,27 +60,27 @@ public class CommitDelta {
         return secondCommitSha1;
     }
 
-    public void setNewFilesSecondCommit(List<String> newFiles){
+    public void setNewFilesSecondCommit(Map<String, String> newFiles){
         this.newFilesSecondCommit = newFiles;
     }
 
-    public void setEditedFiledSecondCommit(List<String> editedFiled){
+    public void setEditedFiledSecondCommit(Map<String, String> editedFiled){
         this.editedFiledSecondCommit = editedFiled;
     }
 
-    public void setDeletedFilesSecondCommit(List<String> deletedFiles){
+    public void setDeletedFilesSecondCommit(Map<String, String> deletedFiles){
         this.deletedFilesSecondCommit = deletedFiles;
     }
 
-    public List<String> getNewFilesSecondCommit(){
+    public Map<String, String> getNewFilesSecondCommit(){
         return newFilesSecondCommit;
     }
 
-    public List<String> getEditedFiledSecondCommit(){
+    public Map<String, String> getEditedFiledSecondCommit(){
         return editedFiledSecondCommit;
     }
 
-    public List<String> getDeletedFilesSecondCommit(){
+    public Map<String, String> getDeletedFilesSecondCommit(){
         return deletedFilesSecondCommit;
     }
 

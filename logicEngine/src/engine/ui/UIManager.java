@@ -1,5 +1,6 @@
 package engine.ui;
 
+import engine.manager.PullRequest;
 import logic.manager.*;
 import logic.manager.Exceptions.FailedToCreateBranchException;
 import logic.manager.Exceptions.FailedToCreateRepositoryException;
@@ -344,5 +345,9 @@ public class UIManager {
 
     public String getPullRequestUser() throws Exception {
         return systemEngine.getRemoteRepositoryOwner();
+    }
+
+    public void deltaCommitPR(PullRequest PR) throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
+        systemEngine.deltaCommitPR(PR);
     }
 }

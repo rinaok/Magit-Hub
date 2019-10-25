@@ -1,11 +1,11 @@
 package server.servlets;
-
 import com.google.gson.Gson;
 import engine.manager.PRManager;
 import engine.manager.PullRequest;
 import engine.ui.UIManager;
+import logic.manager.PRStatus;
+import logic.manager.Utils;
 import server.utils.ServletUtils;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,19 +21,20 @@ public class CollaborationServlet extends HttpServlet {
     private UIManager uiManager;
     private PRManager prManager;
 
-    private void addPR(HttpServletRequest request){
+    private void addPR(HttpServletRequest request) {
         prManager = ServletUtils.getPRManager(getServletContext());
         String targetBranch = request.getParameter("target");
-        targetBranch = targetBranch.replace("/","\\");
-        String baseBranch= request.getParameter("base");
-        baseBranch = baseBranch.replace("/","\\");
+        targetBranch = targetBranch.replace("/", "\\");
+        String baseBranch = request.getParameter("base");
+        baseBranch = baseBranch.replace("/", "\\");
         String msg = request.getParameter("msg");
-        if(targetBranch != null && baseBranch != null) {
+        if (targetBranch != null && baseBranch != null) {
             try {
                 String owner = uiManager.getPullRequestUser();
-                prManager.addPR(new PullRequest(targetBranch, baseBranch, msg), owner);
-            }
-            catch (Exception e){
+                PullRequest pr = new PullRequest(targetBranch, baseBranch, msg, PRStatus.OPEN, owner, Utils.getTime());
+                uiManager.deltaCommitPR(pr);
+                prManager.addPR(pr, owner);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -45,43 +46,33 @@ public class CollaborationServlet extends HttpServlet {
             String reqType = request.getParameter("reqType");
             uiManager = ServletUtils.getUIManager(getServletContext());
             String toJSON = "";
-            switch (reqType){
+            switch (reqType) {
                 case PULL:
                     try {
                         boolean openChanges = uiManager.doPull();
                         toJSON = openChanges ? "Pull was done successfully" : "Pull was not performed since there are open changes";
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         toJSON = e.toString();
-                    }
-                    finally {
-                        toJSON = new Gson().toJson(toJSON);
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("UTF-8");
-                        response.getWriter().write(toJSON);
                     }
                     break;
                 case PUSH:
-                    try{
+                    try {
                         uiManager.doPushToRR();
                         toJSON = "Push of head branch was performed successfully!";
-                    }
-                    catch (Exception e){
+                    } catch (Exception e) {
                         toJSON = e.toString();
-                    }
-                    finally {
-                        toJSON = new Gson().toJson(toJSON);
-                        response.setContentType("application/json");
-                        response.setCharacterEncoding("UTF-8");
-                        response.getWriter().write(toJSON);
                     }
                     break;
                 case PR:
                     addPR(request);
                     break;
             }
-        }
-        catch (Exception e){
+
+            toJSON = new Gson().toJson(toJSON);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(toJSON);
+        } catch (Exception e) {
             System.out.println("Error in GET Collaboration");
         }
     }
