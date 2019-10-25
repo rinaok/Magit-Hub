@@ -22,9 +22,9 @@ public class CollaborationServlet extends HttpServlet {
         try {
             String reqType = request.getParameter("reqType");
             uiManager = ServletUtils.getUIManager(getServletContext());
+            String toJSON = "";
             switch (reqType){
                 case PULL:
-                    String toJSON = "";
                     try {
                         boolean openChanges = uiManager.doPull();
                         toJSON = openChanges ? "Pull was done successfully" : "Pull was not performed since there are open changes";
@@ -40,7 +40,19 @@ public class CollaborationServlet extends HttpServlet {
                     }
                     break;
                 case PUSH:
-
+                    try{
+                        uiManager.doPushToRR();
+                        toJSON = "Push of head branch was performed successfully!";
+                    }
+                    catch (Exception e){
+                        toJSON = e.toString();
+                    }
+                    finally {
+                        toJSON = new Gson().toJson(toJSON);
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().write(toJSON);
+                    }
                     break;
             }
         }

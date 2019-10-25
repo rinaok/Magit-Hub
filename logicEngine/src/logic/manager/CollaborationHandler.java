@@ -351,6 +351,10 @@ public class CollaborationHandler {
                     String commitSha1 = getCurrentBranchFiles();
                     updateRBandRBT(commitSha1);
                     engine.setCurrentCommitSha1Files();
+                    engine.changeActiveRepository(localRepository.getPath(), localRepository.getName());
+                }
+                else{
+                    throw new Exception("Head branch must be RTB when pulling");
                 }
             } else {
                 throw new Exception("Head branch doesn't exists... Something went wrong");
@@ -392,19 +396,6 @@ public class CollaborationHandler {
         updateBranchesAfterPush();
         engine.setCurrentCommitSha1Files();
         return true;
-    }
-
-    public void pushToRR() throws IOException {
-        String headBranch = getHeadBranch(localRepository.getPath());
-        String headCommit = Utils.readFile(new File(localRepository.getPath() + "\\" + Environment.MAGIT + "\\" +
-                Environment.BRANCHES + "\\" + headBranch + ".txt"));
-        Branch branch = engine.getBranchesManager().getBranch(headBranch);
-        if(branch.getBaseBranch() != null){
-            String baseCommit = branch.getHead().createHashCode();
-            while(!headCommit.equals(baseCommit)){
-
-            }
-        }
     }
 
     private void pushToRemote() throws IOException, ParserConfigurationException, FailedToCreateRepositoryException {

@@ -420,6 +420,7 @@ $(document).on('click', '#commitBtn', function (event) {
                 $('#addFileModal').modal('hide');
                 showOpenChanges();
                 refreshWC();
+                location.reload();
             }
         });
     }

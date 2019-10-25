@@ -469,7 +469,8 @@ public class Engine {
             for (String[] obj : files) {
                 if(!new File(remoteObjPath + "\\" + obj[sha1Index]).exists())
                     Files.copy(new File(objectsRepo + "\\" + obj[sha1Index]).toPath(), new File(remoteObjPath + "\\" + obj[sha1Index]).toPath());
-                actionInterface.doAction(obj, path);
+                if(actionInterface != null)
+                    actionInterface.doAction(obj, path);
                 if (obj[fileTypeIndex].equals(FileType.DIRECTORY.toString())) {
                     recursiveRunOverObjectFiles(obj[sha1Index], path + "\\" + obj[fileNameIndex], actionInterface, objectsRepo, remoteObjPath);
                 }
@@ -872,21 +873,15 @@ public class Engine {
         return false;
     }
 
-    public boolean pushToRR() throws Exception {
-        if(collaborationHandler == null)
-            throw new Exception("Collaboration Handler is empty, is this a forked repository?");
-        collaborationHandler.apush();
-    }
-
     public void checkoutWithRTB(String branch) throws IOException, FailedToCreateRepositoryException, FailedToCreateBranchException, ParserConfigurationException {
         collaborationHandler.remoteTrackingBranchFromRemoteBranch(branch);
         checkout(branchesManager.getActive().getName(), false);
     }
 
-    public void pushToRR(String branchToPush) throws Exception {
+    public void pushToRR() throws Exception {
         if(collaborationHandler == null)
-            throw new Exception("Please clone before pulling");
-        collaborationHandler.pushBranchToRR(branchToPush);
+            throw new Exception("Collaboration Handler is empty, is this a forked repository?");
+        collaborationHandler.pushBranchToRR(branchesManager.getActive().getName());
     }
 
     private Map<String, String> getCommitPathToSha1(Commit commit) throws IOException, FailedToCreateRepositoryException, ParserConfigurationException {

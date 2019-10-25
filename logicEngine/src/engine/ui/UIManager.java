@@ -283,8 +283,8 @@ public class UIManager {
         systemEngine.fetch();
     }
 
-    public void doPushToRR(String branchToPush) throws Exception {
-        systemEngine.pushToRR(branchToPush);
+    public void doPushToRR() throws Exception {
+        systemEngine.pushToRR();
     }
 
     public boolean isRepositoryInitialized(){
