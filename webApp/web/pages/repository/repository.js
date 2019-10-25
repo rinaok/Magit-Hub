@@ -189,9 +189,9 @@ function showCommitFiles(files) {
     files.forEach(function(row){
             tableBody = tableBody + "<tr>";
             for (var j = 0; j < table.rows.length; j++){
-                tableBody = tableBody + "<td><b>Name </b><small>" + row["name"] + "</small><br><b>Type </b><small>" +
-                row["type"] + "</small><br><b>SHA1 </b><small>" + row["sha1"] + "</small><br><b>Modified By </b><small>" + row["lastModifier"] +
-                    "</small><br><b>Modification Date </b><small>" + row["modificationDate"] + "</small></td>";
+                tableBody = tableBody + "<td><b>Name </b>" + row["name"] + "<br><b>Type</b>" +
+                row["type"] + "<br><b>SHA1 </b>" + row["sha1"] + "<br><b>Modified By </b>" + row["lastModifier"] +
+                    "<br><b>Modification Date </b><" + row["modificationDate"] + "</td>";
             }
             tableBody = tableBody + "</tr>";
         }
@@ -212,12 +212,12 @@ function showCommits(commits){
         tableBody = tableBody + "<tr style=\"cursor:pointer\">";
         var btn = "<input id=\"createBranch\" type=\"submit\" class=\"btn btn-primary\" value=\"Create Branch\" +/>";
         for (var j = 0; j < table.rows.length; j++){
-            tableBody = tableBody + "<td><small>" + row["sha1"] + "</small></td>";
-            tableBody = tableBody + "<td><small>" + row["commit"]["message"] + "</small></td>";
-            tableBody = tableBody + "<td><small>" + row["commit"]["creationDate"] + "</small></td>";
-            tableBody = tableBody + "<td><small>" + row["commit"]["createdBy"] + "</small></td>";
-            tableBody = tableBody + "<td><small>" + row["pointingBranches"] + "</small></td>";
-            tableBody = tableBody + "<td><small>" + btn + "</small></td>";
+            tableBody = tableBody + "<td>" + row["sha1"] + "</td>";
+            tableBody = tableBody + "<td>" + row["commit"]["message"] + "</td>";
+            tableBody = tableBody + "<td>" + row["commit"]["creationDate"] + "</td>";
+            tableBody = tableBody + "<td>" + row["commit"]["createdBy"] + "</td>";
+            tableBody = tableBody + "<td>" + row["pointingBranches"] + "</td>";
+            tableBody = tableBody + "<td>" + btn + "</td>";
         }
         tableBody = tableBody + "</tr>";
     });
@@ -266,6 +266,28 @@ $(document).on('click', '#createBranch', function (event) {
         success: function (r) {
             showBranchesData(r);
             alert("Branch created successfully");
+        }
+    });
+});
+
+$(document).on('click', '#deleteBranch', function (event) {
+    event.preventDefault();
+    var branchName = event.currentTarget.parentElement.parentElement.cells[0].innerText;
+    debuggerS
+    var data = branchName;
+    $.ajax({
+        method: 'DELETE',
+        data: data,
+        url: "repo",
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            showBranchesData(r);
+            alert("Branch deleted successfully");
         }
     });
 });
