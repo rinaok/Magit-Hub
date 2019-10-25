@@ -42,3 +42,9 @@ li label{
 li a:hover:not(.active) {
     background-color: #ddd;
 }
+
+#msgarea {
+    height: 70px;
+    background-color: lightgrey;
+    overflow-y:auto;
+}
