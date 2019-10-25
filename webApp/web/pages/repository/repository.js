@@ -156,15 +156,13 @@ function showBranchesData(branches){
     for (var i = 0 ; i < branches.length; i++) {
         var branch = branches[i];
         var colorClass = "<li class='list-group-item list-group-item-light'>";
-        var Head = "";
         if(branch.isHead) {
             colorClass = "<li class='list-group-item list-group-item' style='background-color: #ffe6e6'>";
-            Head = " || Head Branch";
         }
         branchesList.append(
             colorClass +
             "<div style='max-width: fit-content; max-height: 10px;'>" +
-            "<h6>" + branch.name + Head +"</h6>" +
+            "<h6>" + branch.name +"</h6>" +
             "<p>" + branch.commitSha1 + "</p>" +
             "</div>" +
             "<div>" +
@@ -303,8 +301,7 @@ $(document).on('click', '#createBranch', function (event) {
 
 $(document).on('click', '#deleteBranch', function (event) {
     event.preventDefault();
-    var branchName = event.currentTarget.parentElement.parentElement.cells[0].innerText;
-    debuggerS
+    var branchName = event.currentTarget.parentElement.parentElement.firstChild.firstChild.innerText;
     var data = branchName;
     $.ajax({
         method: 'DELETE',
@@ -318,7 +315,6 @@ $(document).on('click', '#deleteBranch', function (event) {
         },
         success: function (r) {
             showBranchesData(r);
-            alert("Branch deleted successfully");
         }
     });
 });
