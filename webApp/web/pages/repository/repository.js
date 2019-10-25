@@ -151,7 +151,7 @@ function showBranchesData(branches){
         var colorClass = "<li class='list-group-item list-group-item-light'>";
         var Head = "";
         if(branch.isHead) {
-            colorClass = "<li class='list-group-item list-group-item-primary'>";
+            colorClass = "<li class='list-group-item list-group-item' style='background-color: #ffe6e6'>";
             Head = " || Head Branch";
         }
         branchesList.append(
