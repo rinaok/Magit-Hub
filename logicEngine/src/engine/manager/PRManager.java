@@ -13,11 +13,17 @@ public class PRManager {
         idToPR = new HashMap<>();
     }
 
-    public List<PullRequest> getPullRequests(String user){
+    public List<PullRequest> getPullRequests(String user, String repository){
         if(userToPR.containsKey(user)){
-            return userToPR.get(user);
+            List<PullRequest> prPerRepo = new ArrayList<>();
+            List<PullRequest> prs = userToPR.get(user);
+            for(PullRequest pr : prs){
+                if(repository.equals(pr.getRepository()))
+                    prPerRepo.add(pr);
+            }
+            return prPerRepo;
         }
-        else return null;
+        return null;
     }
 
     public void addPR(PullRequest newPR, String user){

@@ -64,10 +64,6 @@ public class MergeHandler {
         return MergeResult.REGULAR_MERGE;
     }
 
-    public void approvePR(Branch base, Branch target){
-
-    }
-
     public boolean areThereConflicts() {
         if(conflicts == null || conflicts.size() == 0)
             return false;

@@ -350,4 +350,8 @@ public class UIManager {
     public void deltaCommitPR(PullRequest PR) throws ParserConfigurationException, IOException, FailedToCreateRepositoryException {
         systemEngine.deltaCommitPR(PR);
     }
+
+    public void acceptPR(PullRequest PR){
+        systemEngine.acceptPR(PR);
+    }
 }

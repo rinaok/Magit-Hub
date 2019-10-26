@@ -25,8 +25,10 @@ public class PullRequest {
     private String date;
     private CommitsDelta delta;
     private int prID;
+    private String rejectedMsg;
+    private String repository;
 
-    public PullRequest(String targetBranch, String baseBranch, String msg, PRStatus status, String user, String date){
+    public PullRequest(String targetBranch, String baseBranch, String msg, PRStatus status, String user, String date, String repository){
         this.baseBranch = baseBranch;
         this.targetBranch = targetBranch;
         this.msg = msg;
@@ -34,6 +36,7 @@ public class PullRequest {
         this.user = user;
         this.date = date;
         this.delta = new CommitsDelta();
+        this.repository = repository;
     }
 
     public void setPrID(int prID){
@@ -62,6 +65,40 @@ public class PullRequest {
 
     public void setPRStatus(PRStatus status){
         this.status = status;
+    }
+
+    public void setRejectedMsg(String msg){
+        rejectedMsg = msg;
+    }
+
+    public PRStatus getStatus(){
+        return status;
+    }
+
+    public int getPrID(){
+        return prID;
+    }
+
+    public String getOwner(){
+        return user;
+    }
+
+    public String getRejectedMsg(){
+        if(rejectedMsg != null)
+            return rejectedMsg;
+        return  "";
+    }
+
+    public String getDate(){
+        return date;
+    }
+
+    public String getRepository(){
+        return repository;
+    }
+
+    public String getMsg(){
+        return msg;
     }
 }
 

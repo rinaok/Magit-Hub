@@ -1,11 +1,13 @@
 package server.servlets;
 import com.google.gson.Gson;
+import engine.manager.MagitMsgManager;
 import engine.manager.PRManager;
 import engine.manager.PullRequest;
 import engine.ui.UIManager;
 import logic.manager.PRStatus;
 import logic.manager.Utils;
 import server.utils.ServletUtils;
+import server.utils.SessionUtils;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,6 +24,7 @@ public class CollaborationServlet extends HttpServlet {
     private static final String PR = "2";
     private UIManager uiManager;
     private PRManager prManager;
+    private MagitMsgManager msgManager;
 
     private void addPR(HttpServletRequest request) {
         prManager = ServletUtils.getPRManager(getServletContext());
@@ -30,13 +33,42 @@ public class CollaborationServlet extends HttpServlet {
         String msg = request.getParameter("msg");
         if (targetBranch != null && baseBranch != null) {
             try {
-                String owner = uiManager.getPullRequestUser();
-                PullRequest pr = new PullRequest(targetBranch, baseBranch, msg, PRStatus.OPEN, owner, Utils.getTime());
+                String username = SessionUtils.getUsername(request);
+                String repository = uiManager.getRepositoryName();
+                PullRequest pr = new PullRequest(targetBranch, baseBranch, msg, PRStatus.OPEN, username, Utils.getTime(), repository);
                 uiManager.deltaCommitPR(pr);
-                prManager.addPR(pr, owner);
+                prManager.addPR(pr, uiManager.getPullRequestUser());
+                msgManager = ServletUtils.getMsgManager(getServletContext());
+                String msgPR = "Pull Request #" + pr.getPrID() + " was sent by [" + username + "]\r\n" +
+                        "Repository: " + pr.getRepository() + "\r\n" +
+                        "Base Branch: " + pr.getBaseBranch() + "\r\n"
+                        + "Target Branch: " + pr.getTargetBranch() + "\r\n"
+                        + "PR Message: " + pr.getMsg();
+                msgManager.addMsgString(msgPR, Utils.getTime(), uiManager.getPullRequestUser());
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void sendMsg(PullRequest PR, String username){
+        msgManager = ServletUtils.getMsgManager(getServletContext());
+        switch (PR.getStatus()){
+            case CLOSED:
+                String msgClosed = "Pull Request #" + PR.getPrID() + " was accepted by [" + username + "]\r\n" +
+                        "Base Branch: " + PR.getBaseBranch() + "\r\n"
+                        + "Target Branch: " + PR.getTargetBranch() + "\r\n"
+                        + "Date of PR: " + PR.getDate();
+                msgManager.addMsgString(msgClosed, Utils.getTime(), PR.getOwner());
+                break;
+            case REJECTED:
+                String msgReject = "Pull Request #" + PR.getPrID() + " was rejected by [" + username + "]\r\n" +
+                        "Reason: " + PR.getRejectedMsg() + "\r\n" +
+                        "Base Branch: " + PR.getBaseBranch() + "\r\n"
+                        + "Target Branch: " + PR.getTargetBranch() + "\r\n"
+                        + "Date of PR: " + PR.getDate();
+                msgManager.addMsgString(msgReject, Utils.getTime(), PR.getOwner());
+                break;
         }
     }
 
@@ -97,6 +129,10 @@ public class CollaborationServlet extends HttpServlet {
         String[] data = br.readLine().split("&");
         String prID = data[0];
         String status = data[1];
+        prManager = ServletUtils.getPRManager(getServletContext());
+        PullRequest pr = prManager.getPRByID(Integer.parseInt(prID));
+        if(pr == null)
+            return;
         PRStatus prStatus = PRStatus.OPEN;
         switch (status){
             case "Open":
@@ -104,13 +140,16 @@ public class CollaborationServlet extends HttpServlet {
                 break;
             case "Closed":
                 prStatus = PRStatus.CLOSED;
+                uiManager = ServletUtils.getUIManager(getServletContext());
+                uiManager.acceptPR(pr);
+                sendMsg(pr, SessionUtils.getUsername(request));
                 break;
             case "Rejected":
                 prStatus = PRStatus.REJECTED;
+                pr.setRejectedMsg(data[2]);
+                sendMsg(pr, SessionUtils.getUsername(request));
                 break;
         }
-        prManager = ServletUtils.getPRManager(getServletContext());
-        PullRequest pr = prManager.getPRByID(Integer.parseInt(prID));
         pr.setPRStatus(prStatus);
     }
 }

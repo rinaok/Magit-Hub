@@ -217,7 +217,7 @@ public class RepositoryServlet extends HttpServlet {
             }
             List<Commit> commits = new ArrayList<>(uiManager.getCommitsMap().values());
             prManager = ServletUtils.getPRManager(getServletContext());
-            List<PullRequest> pullRequests = prManager.getPullRequests(username);
+            List<PullRequest> pullRequests = prManager.getPullRequests(username, uiManager.getRepositoryName());
             RepoMagitFile magitFile = new RepoMagitFile(branches, commits, wcFiles, uiManager.isForked(), pullRequests);
             return new Gson().toJson(magitFile);
         }

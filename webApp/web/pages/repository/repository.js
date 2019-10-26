@@ -49,10 +49,22 @@ function showPullRequests(pullRequests) {
         document.getElementById("prArea").innerHTML = "No pull requests";
         return;
     }
+
+    var openPRButtons = "<input id=\"rejectPR\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Reject\" style='float: right;'>" +
+        "<input id=\"AcceptPR\" type=\"submit\" class=\"btn btn-success pull-right\" value=\"Accept\" style='float: right; margin-right: 10px;'>" +
+        "<input id=\"PRDelta\" type=\"submit\" class=\"btn btn-info pull-right\" value=\"Changes\" style=\"float: right; margin-right: 10px;\">";
+
+    var closedPRButtons = "<input id=\"PRDelta\" type=\"submit\" class=\"btn btn-info pull-right\" value=\"Changes\" style=\"float: right; margin-right: 10px;\">";
+
     for (var i = 0 ; i < pullRequests.length; i++) {
+        var buttons = pullRequests[i].status == "OPEN" ? openPRButtons : closedPRButtons;
         var targetBranch = pullRequests[i].targetBranch;
+        var rejected = "";
+        if(pullRequests[i].status == "REJECTED"){
+            rejected = "<p><b>Reject Message </b>" + pullRequests[i].rejectedMsg + "</p>"
+        }
         var colorClass = "<li class='list-group-item list-group-item-light'>";
-        pullRequestList.append(
+            pullRequestList.append(
             colorClass + pullRequestStatusBadge(pullRequests[i].status) +
             "<div style='max-width: fit-content; max-height: fit-content;'>" +
             "<h6><b>Pull Request #" + pullRequests[i].prID + "</b></h6>" +
@@ -60,11 +72,9 @@ function showPullRequests(pullRequests) {
             "<p><b>Base Branch </b>" + pullRequests[i].baseBranch + "</p>" +
             "<p><b>Message </b>" + pullRequests[i].msg + "</p>" +
             "<p><b>Date </b>" + pullRequests[i].date + "</p>" +
+                rejected +
             "</div>" +
-            "<div>" +
-            "<input id=\"deletePR\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Reject\" style='float: right;'>" +
-            "<input id=\"AcceptPR\" type=\"submit\" class=\"btn btn-success pull-right\" value=\"Accept\" style='float: right; margin-right: 10px;'>" +
-            "<input id=\"PRDelta\" type=\"submit\" class=\"btn btn-info pull-right\" value=\"Changes\" style=\"float: right; margin-right: 10px;\">" +
+            "<div>" + buttons +
             "</div>" +
             "</div>");
     }
@@ -73,9 +83,10 @@ function showPullRequests(pullRequests) {
 $(document).on('click', '#AcceptPR', function (event) {
     var prID = event.currentTarget.parentElement.parentElement.children[1].firstChild.innerText;
     prID = prID.substr(14); // get only PR number
+    var data = prID + "&Closed";
     $.ajax({
         method: 'POST',
-        data: prID,
+        data: data,
         url: "collaboration",
         processData: false, // Don't process the files
         contentType: false, // Set content type to false as jQuery will tell the server its a query string request
@@ -87,6 +98,29 @@ $(document).on('click', '#AcceptPR', function (event) {
             location.reload();
         }
     });
+});
+
+$(document).on('click', '#rejectPR', function (event) {
+    var msg = prompt("Please enter a rejection message:");
+    if (msg != null && msg != "") {
+        var prID = event.currentTarget.parentElement.parentElement.children[1].firstChild.innerText;
+        prID = prID.substr(14); // get only PR number
+        var data = prID + "&Rejected&" + msg;
+        $.ajax({
+            method: 'POST',
+            data: data,
+            url: "collaboration",
+            processData: false, // Don't process the files
+            contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+            timeout: 4000,
+            error: function (e) {
+                alert(e.responseText);
+            },
+            success: function (r) {
+                location.reload();
+            }
+        });
+    }
 });
 
 $(document).on('click', '#PRDelta', function (event) {
@@ -385,42 +419,47 @@ $(document).on('click', '#createBranch', function (event) {
     event.preventDefault();
     var sha1 = event.currentTarget.parentElement.parentElement.cells[0].innerText;
     var branchName = prompt("Enter a Branch Name", "Branch Name");
-    var data = sha1 + "&" + branchName;
-    $.ajax({
-        method: 'PUT',
-        data: data,
-        url: "repo",
-        processData: false, // Don't process the files
-        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-        timeout: 4000,
-        error: function (e) {
-            alert(e.responseText);
-        },
-        success: function (r) {
-            showBranchesData(r);
-            alert("Branch created successfully");
-        }
-    });
+    if (branchName != null && branchName != "") {
+        var data = sha1 + "&" + branchName;
+        $.ajax({
+            method: 'PUT',
+            data: data,
+            url: "repo",
+            processData: false, // Don't process the files
+            contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+            timeout: 4000,
+            error: function (e) {
+                alert(e.responseText);
+            },
+            success: function (r) {
+                showBranchesData(r);
+                alert("Branch created successfully");
+            }
+        });
+    }
 });
 
 $(document).on('click', '#deleteBranch', function (event) {
     event.preventDefault();
-    var branchName = event.currentTarget.parentElement.parentElement.firstChild.firstChild.innerText;
-    var data = branchName;
-    $.ajax({
-        method: 'DELETE',
-        data: data,
-        url: "repo",
-        processData: false, // Don't process the files
-        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-        timeout: 4000,
-        error: function (e) {
-            alert(e.responseText);
-        },
-        success: function (r) {
-            showBranchesData(r);
-        }
-    });
+    var toDelete = confirm("Are you sure you want to delete this branch?");
+    if(toDelete) {
+        var branchName = event.currentTarget.parentElement.parentElement.firstChild.firstChild.innerText;
+        var data = branchName;
+        $.ajax({
+            method: 'DELETE',
+            data: data,
+            url: "repo",
+            processData: false, // Don't process the files
+            contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+            timeout: 4000,
+            error: function (e) {
+                alert(e.responseText);
+            },
+            success: function (r) {
+                showBranchesData(r);
+            }
+        });
+    }
 });
 
 $(document).on('click', '#editBtn', function (event) {
@@ -599,7 +638,8 @@ $(document).on('click', '#submitPRBtn', function (event) {
         }
         if(base != null && target != null){
             var msg = document.getElementById("prMsg").value;
-            var data = "reqType=" + PR + "&target=" + encodeURIComponent(target) + "&base=" + encodeURIComponent(base) + "&msg=" + msg;
+            var data = "reqType=" + PR + "&target=" + encodeURIComponent(target) + "&base=" + encodeURIComponent(base)
+                + "&msg=" + msg;
             $.ajax({
                 method: 'GET',
                 data: data,

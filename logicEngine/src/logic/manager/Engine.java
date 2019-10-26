@@ -1034,4 +1034,18 @@ public class Engine {
             }
         }
     }
+
+    public void acceptPR(PullRequest PR){
+        String base = PR.getBaseBranch();
+        String target = PR.getTargetBranch();
+        Branch t = branchesManager.getBranch(target);
+        Branch b = branchesManager.getBranch(base);
+        String repoName = repositoriesManager.getActive().getName();
+        if(b == null && base.contains(repoName)){ // if RB
+            base = base.substring(repoName.length() + 1);
+            b = branchesManager.getBranch(base);
+        }
+        if(t != null && b != null)
+            b.setHead(t.getHead());
+    }
 }
