@@ -11,7 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 @WebServlet(name = "CollaborationServlet", urlPatterns = {"/pages/users/collaboration", "/pages/repository/collaboration"})
 public class CollaborationServlet extends HttpServlet {
@@ -24,9 +26,7 @@ public class CollaborationServlet extends HttpServlet {
     private void addPR(HttpServletRequest request) {
         prManager = ServletUtils.getPRManager(getServletContext());
         String targetBranch = request.getParameter("target");
-        targetBranch = targetBranch.replace("/", "\\");
         String baseBranch = request.getParameter("base");
-        baseBranch = baseBranch.replace("/", "\\");
         String msg = request.getParameter("msg");
         if (targetBranch != null && baseBranch != null) {
             try {
@@ -75,5 +75,42 @@ public class CollaborationServlet extends HttpServlet {
         } catch (Exception e) {
             System.out.println("Error in GET Collaboration");
         }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+        String prID = br.readLine();
+        prManager = ServletUtils.getPRManager(getServletContext());
+        PullRequest pr = prManager.getPRByID(Integer.parseInt(prID));
+        if (pr != null) {
+            String toJSON = new Gson().toJson(pr.getDelta());
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(toJSON);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
+        String[] data = br.readLine().split("&");
+        String prID = data[0];
+        String status = data[1];
+        PRStatus prStatus = PRStatus.OPEN;
+        switch (status){
+            case "Open":
+                prStatus = PRStatus.OPEN;
+                break;
+            case "Closed":
+                prStatus = PRStatus.CLOSED;
+                break;
+            case "Rejected":
+                prStatus = PRStatus.REJECTED;
+                break;
+        }
+        prManager = ServletUtils.getPRManager(getServletContext());
+        PullRequest pr = prManager.getPRByID(Integer.parseInt(prID));
+        pr.setPRStatus(prStatus);
     }
 }

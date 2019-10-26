@@ -52,20 +52,124 @@ function showPullRequests(pullRequests) {
     for (var i = 0 ; i < pullRequests.length; i++) {
         var targetBranch = pullRequests[i].targetBranch;
         var colorClass = "<li class='list-group-item list-group-item-light'>";
-        branchesList.append(
-            colorClass + "<span class = 'badge badge-primary'>Pull Request</span>" +
-            "<div style='max-width: fit-content; max-height: 10px;'>" +
-            "<h6><b>Target Branch </b>" + targetBranch + "</h6>" +
+        pullRequestList.append(
+            colorClass + pullRequestStatusBadge(pullRequests[i].status) +
+            "<div style='max-width: fit-content; max-height: fit-content;'>" +
+            "<h6><b>Pull Request #" + pullRequests[i].prID + "</b></h6>" +
+            "<p><b>Target Branch </b>" + targetBranch + "</p>" +
             "<p><b>Base Branch </b>" + pullRequests[i].baseBranch + "</p>" +
             "<p><b>Message </b>" + pullRequests[i].msg + "</p>" +
+            "<p><b>Date </b>" + pullRequests[i].date + "</p>" +
             "</div>" +
             "<div>" +
-            "<input id=\"deletePR\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Reject\" style='float: right; margin-right: 10px;'>" +
-            "<input id=\"checkoutPR\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Checkout\" style='float: right;'>" +
-            "<input id=\"AcceptPR\" type=\"submit\" class=\"btn btn-success pull-right\" value=\"Accept\" style='float: right;'>" +
-            "<input id=\"Details\" type=\"submit\" class=\"btn btn-info pull-right\" value=\"Details\" style=\"float: right;\">" +
+            "<input id=\"deletePR\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Reject\" style='float: right;'>" +
+            "<input id=\"AcceptPR\" type=\"submit\" class=\"btn btn-success pull-right\" value=\"Accept\" style='float: right; margin-right: 10px;'>" +
+            "<input id=\"PRDelta\" type=\"submit\" class=\"btn btn-info pull-right\" value=\"Changes\" style=\"float: right; margin-right: 10px;\">" +
             "</div>" +
             "</div>");
+    }
+}
+
+$(document).on('click', '#AcceptPR', function (event) {
+    var prID = event.currentTarget.parentElement.parentElement.children[1].firstChild.innerText;
+    prID = prID.substr(14); // get only PR number
+    $.ajax({
+        method: 'POST',
+        data: prID,
+        url: "collaboration",
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            location.reload();
+        }
+    });
+});
+
+$(document).on('click', '#PRDelta', function (event) {
+    event.preventDefault();
+    var prID = event.currentTarget.parentElement.parentElement.children[1].firstChild.innerText;
+    prID = prID.substr(14); // get only PR number
+    $.ajax({
+        method: 'PUT',
+        data: prID,
+        url: "collaboration",
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            showDeltaModal(r);
+        }
+    });
+});
+
+function showDeltaModal(delta) {
+    var deltaFiles = $('#deltaFiles');
+    var navigator = $('#nav-tabContent');
+    var isActive = true;
+    navigator.empty();
+    deltaFiles.empty();
+    var numEditedFiles = Object.getOwnPropertyNames(delta.editedFiles).length;
+    var numNewFiles = Object.getOwnPropertyNames(delta.newFiles).length;
+    var numDeletedFiles = Object.getOwnPropertyNames(delta.deletedFiles).length;
+
+    for (var i = 0; i < numEditedFiles; i++) {
+        var path = Object.values(delta.editedFiles)[i];
+        var sha1 = Object.getOwnPropertyNames(delta.editedFiles)[i];
+        var content = "Content is unavailable";
+        if(delta.sha1ToContent[sha1] != null)
+            content = delta.sha1ToContent[sha1];
+        if(isActive){
+            isActive = false;
+            deltaFiles.append("<a href='#" + sha1 + "' class='list-group-item list-group-item-action active' role='tab' id=\"' + sha1 + '\" data-toggle=\"list\"'><span class = 'badge badge-primary'>Modified</span>" + path + "</a>");
+            navigator.append("<div class='tab-pane fade show active' id='" + sha1 + "' role='tabpanel' aria-labelledby='" + sha1 + "'>" + content + "</div>");
+        }
+        else {
+            deltaFiles.append("<a href='#" + sha1 + "' class='list-group-item list-group-item-action' role='tab' id=\"' + sha1 + '\" data-toggle=\"list\"'><span class = 'badge badge-primary'>Modified</span>" + path + "</a>");
+            navigator.append("<div class='tab-pane fade' id='" + sha1 + "' role='tabpanel' aria-labelledby='" + sha1 + "'>" + content + "</div>");
+        }
+    }
+
+    for (var i = 0; i < numNewFiles; i++) {
+        var path = Object.values(delta.newFiles)[i];
+        var sha1 = Object.getOwnPropertyNames(delta.newFiles)[i];
+        var content = "Content is unavailable";
+        if (delta.sha1ToContent[sha1] != null)
+            content = delta.sha1ToContent[sha1];
+        if (isActive) {
+            isActive = false;
+            deltaFiles.append("<a href='#" + sha1 + "' class='list-group-item list-group-item-action active' role='tab' id=\"' + sha1 + '\" data-toggle=\"list\"'><span class = 'badge badge-success'>New</span>" + path + "</a>");
+            navigator.append("<div class='tab-pane fade show active' id='" + sha1 + "' role='tabpanel' aria-labelledby='" + sha1 + "'>" + content + "</div>");
+        } else {
+            deltaFiles.append("<a href='#" + sha1 + "' class='list-group-item list-group-item-action' role='tab' id=\"' + sha1 + '\" data-toggle=\"list\"'><span class = 'badge badge-success'>New</span>" + path + "</a>");
+            navigator.append("<div class='tab-pane fade' id='" + sha1 + "' role='tabpanel' aria-labelledby='" + sha1 + "'>" + content + "</div>");
+        }
+    }
+
+    for (var i = 0; i < numDeletedFiles; i++) {
+        var path = Object.values(delta.deletedFiles)[i];
+        var sha1 = Object.getOwnPropertyNames(delta.deletedFiles)[i];
+        deltaFiles.append("<li class='list-group-item list-group-item-action'><span class = 'badge badge-secondary'>Deleted</span><id='" + sha1 + "' data-toggle=\"list\"'>" + path + "</li>");
+    }
+
+    $('#PRDeltaModal').modal('show');
+}
+
+function pullRequestStatusBadge(status) {
+    if(status == "OPEN"){
+        return "<span class = 'badge badge-primary'>Open</span>";
+    }
+    else if(status == "CLOSED"){
+        return "<span class = 'badge badge-secondary'>Closed</span>";
+    }
+    else if(status == "REJECTED"){
+        return "<span class = 'badge badge-danger'>Rejected</span>";
     }
 }
 
@@ -494,7 +598,7 @@ $(document).on('click', '#submitPRBtn', function (event) {
             }
         }
         if(base != null && target != null){
-            var msg = document.getElementById("prMsg").innerHTML;
+            var msg = document.getElementById("prMsg").value;
             var data = "reqType=" + PR + "&target=" + encodeURIComponent(target) + "&base=" + encodeURIComponent(base) + "&msg=" + msg;
             $.ajax({
                 method: 'GET',
@@ -508,8 +612,8 @@ $(document).on('click', '#submitPRBtn', function (event) {
                     alert(e.responseText);
                 },
                 success: function (r) {
-                    alert(r);
-                    location.reload();
+                    alert("Pull request was sent successfully!");
+                    $('#pullRequestModal').modal('toggle');
                 }
             });
         }

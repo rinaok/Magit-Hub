@@ -28,6 +28,7 @@
         <h1 align="center">MAGit Hub</h1>
         <ul>
             <li><a href="#UpdateWC">Update WC</a></li>
+            <li><a href="#pullRequestArea">Pull Requests</a></li>
             <li><a href="#collaboration">Collaboration</a></li>
             <li><a href="../users/users.html">Back</a></li>
             <li><a href="../../users/logout">Logout</a></li>
@@ -43,7 +44,7 @@
                 </div>
             </div>
             <br>
-            <div class="row" style="background-color: #f3f3f3;" >
+            <div class="row" style="background-color: #f3f3f3;" id="pullRequestArea">
                 <div class="col-12">
                     <br>
                     <h3>Pull Requests</h3>
@@ -180,7 +181,7 @@
 
         <!-- PR Delta Modal -->
         <div class="modal fade right" tabindex="-1" role="dialog" aria-hidden="true" id="PRDeltaModal">
-            <div class="modal-dialog modal-full-height modal-bottom" role="document">
+            <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title w-100">Files Changes</h4>
@@ -189,8 +190,15 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="deltaForm">
-                        </form>
+                        <div class="row">
+                            <div class="col-6" id="files">
+                                <div class="list-group" id="deltaFiles" role="tablist"></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="tab-content" id="nav-tabContent">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer justify-content-center">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
