@@ -4,6 +4,8 @@ var GET_COMMIT_FILES = 2;
 var GET_FILE_CONTENT = 3;
 var GET_OPEN_CHANGES = 4;
 var GET_ACTIVE_USER = 5;
+var CHECKOUT = 6;
+var CHECKOUT_RTB = 7;
 
 var EDIT_FILE = 4;
 var DELETE_FILE = 5;
@@ -296,9 +298,13 @@ function showBranchesData(branches){
     branchesList.empty();
     for (var i = 0 ; i < branches.length; i++) {
         var branch = branches[i];
+        var buttons =  "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Delete\" style=\"float: right;\">" +
+            "<input id=\"checkout\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Checkout\" style='float: right; margin-right: 10px;'>";
         var colorClass = "<li class='list-group-item list-group-item-light'>";
         if(branch.isHead) {
             colorClass = "<li class='list-group-item list-group-item' style='background-color: #ffe6e6'>";
+            buttons =  "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Delete\" style=\"float: right;\" disabled>" +
+                "<input id=\"checkout\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Checkout\" style='float: right; margin-right: 10px;' disabled>";
         }
         branchesList.append(
             colorClass +
@@ -306,9 +312,7 @@ function showBranchesData(branches){
             "<h6>" + branch.name +"</h6>" +
             "<p>" + branch.commitSha1 + "</p>" +
             "</div>" +
-            "<div>" +
-            "<input id=\"deleteBranch\" type=\"submit\" class=\"btn btn-danger pull-right\" value=\"Delete\" style=\"float: right;\">" +
-            "<input id=\"checkout\" type=\"submit\" class=\"btn btn-primary pull-right\" value=\"Checkout\" style='float: right; margin-right: 10px;'>" +
+            "<div>" + buttons +
             "</div>" +
             "</div>");
     }
@@ -418,6 +422,53 @@ function showCommits(commits){
     }
 }
 
+$(document).on('click', '#checkout', function (event) {
+    var branchName = event.currentTarget.parentElement.parentElement.firstChild.firstChild.innerText;
+    var data = "reqType=" + CHECKOUT + "&name=" + encodeURIComponent(branchName);
+    $.ajax({
+        method: 'GET',
+        data: data,
+        url: "repo",
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            if(e.status == 403) {
+                var rtb = confirm(e.responseText);
+                if(rtb){
+                    checkoutRTB(branchName);
+                }
+                else {
+
+                }
+            }
+            else
+                alert(e.responseText);
+        },
+        success: function (r) {
+            location.reload();
+        }
+    });
+});
+
+function checkoutRTB(branch){
+    var data = "reqType=" + CHECKOUT_RTB + "&name=" + encodeURIComponent(branch);
+    $.ajax({
+        method: 'GET',
+        data: data,
+        url: "repo",
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+           alert(e.responseText);
+        },
+        success: function (r) {
+            location.reload();
+        }
+    });
+}
+
 $(document).on('click', '#createBranch', function (event) {
     event.preventDefault();
     var sha1 = event.currentTarget.parentElement.parentElement.cells[0].innerText;
@@ -447,7 +498,7 @@ $(document).on('click', '#deleteBranch', function (event) {
     var toDelete = confirm("Are you sure you want to delete this branch?");
     if(toDelete) {
         var branchName = event.currentTarget.parentElement.parentElement.firstChild.firstChild.innerText;
-        var data = branchName;
+        var data = encodeURIComponent(branchName);
         $.ajax({
             method: 'DELETE',
             data: data,

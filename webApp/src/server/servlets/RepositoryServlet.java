@@ -34,6 +34,8 @@ public class RepositoryServlet extends HttpServlet {
     private static final String GET_FILE_CONTENT = "3";
     private static final String GET_OPEN_CHANGES = "4";
     private static final String GET_ACTIVE_USER = "5";
+    private static final String CHECKOUT = "6";
+    private static final String CHECKOUT_RTB = "7";
 
     private UIManager uiManager;
     private Repository currRepo;
@@ -111,10 +113,33 @@ public class RepositoryServlet extends HttpServlet {
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write(user);
+                    break;
+                case CHECKOUT:
+                    String branch = request.getParameter("name");
+                    if(uiManager.isRemoteBranch(branch))
+                        returnError(response, "Cannot checkout remote branch, would you like to create a RTB instead?");
+                    else {
+                        uiManager.checkout(branch, false);
+                    }
+                    break;
+                case CHECKOUT_RTB:
+                    String branchName = request.getParameter("name");
+                    uiManager.createCheckoutOnRTB(branchName);
             }
         }
         catch (Exception e){
             System.out.println("Error in GET repository");
+        }
+    }
+
+    private void returnError(HttpServletResponse response, String message) throws IOException {
+        try{
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write(message);
+            response.flushBuffer();
+        }
+        catch (Exception e){
+            System.out.println("returnError Error : Branch not exists");
         }
     }
 

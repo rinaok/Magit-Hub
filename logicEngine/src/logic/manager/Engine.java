@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 public class Engine {
     public final static String REMOTE_LOCATION = "RemoteRepository";
+    public static final String REPOSITORY_DIR = "C:\\magit-ex3";
     private static final int modificationDateIndex = 4;
     private static final int modifiedByIndex = 3;
     private static final int fileTypeIndex = 2;
@@ -544,21 +545,38 @@ public class Engine {
         branchesManager.addItem(newBranch);
     }
 
-    public void deleteBranch(String branchName) throws FailedToCreateBranchException, IOException {
+    public void deleteBranch(String branchName) throws Exception {
         if(magitRepo == null)
             throw new FailedToCreateBranchException("Error! Repository is empty. Please activate a repository or create a new one");
         if(branchName.equals(branchesManager.getActive().getName()))
             throw new FailedToCreateBranchException("Error! Can't delete the head branch");
-        if(branchesManager.isBranchExists(branchName)){
+        if(branchesManager.isBranchExists(branchName)) {
+            if(branchesManager.getBranch(branchName).getTracking()){
+                String RemoteBranch = branchesManager.getBranch(branchName).getTrackingAfter();
+                branchDeletion(RemoteBranch +"\\" + branchName);
+                deleteRRFromRemote(branchName);
+            }
+            branchDeletion(branchName);
+        }
+        else
+            throw new FailedToCreateBranchException("Error! Branch name doesn't exists");
+    }
+
+    private void branchDeletion(String branchName) throws FailedToCreateBranchException, IOException {
             if(!Utils.deleteFile(magitRepo + "\\" + Environment.BRANCHES + "\\" + branchName + ".txt") &&
                     new File(magitRepo + "\\" + Environment.BRANCHES + "\\" + branchName + ".txt").exists()) {
                 throw new FailedToCreateBranchException("Failed to delete the branch file");
             }
             else
                 branchesManager.deleteBranch(branchName);
-        }
-        else
-            throw new FailedToCreateBranchException("Error! Branch name doesn't exists");
+    }
+
+    private void deleteRRFromRemote(String branchName) throws Exception {
+        if(collaborationHandler == null)
+            throw new Exception("Could not delete branch in the remote repository");
+        String location = collaborationHandler.getRemoteLocation();
+        String path = location + "\\" + Environment.MAGIT + "\\" + Environment.BRANCHES + "\\" + branchName + ".txt";
+        Utils.deleteFile(path);
     }
 
     protected void initSha1ToCommitMap() throws IOException, ParserConfigurationException {

@@ -116,6 +116,12 @@ public class UIManager {
         return systemEngine.checkout(newBranch, toDelete);
     }
 
+    public boolean isRemoteBranch(String branchName){
+        if(systemEngine.getBranchesManager().isBranchExists(branchName))
+            return systemEngine.getBranchesManager().getBranch(branchName).getIsRemote();
+        return false;
+    }
+
     private boolean getResponseFromUser() {
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
@@ -175,7 +181,7 @@ public class UIManager {
         systemEngine.addNewBranchOnCommit(branchName, commit);
     }
 
-    public String deleteBranch(String name){
+    public String deleteBranch(String name) throws Exception {
         try{
             systemEngine.deleteBranch(name);
             return "Branch was deleted successfully";

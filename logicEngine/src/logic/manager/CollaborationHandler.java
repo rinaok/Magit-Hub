@@ -46,6 +46,10 @@ public class CollaborationHandler {
         createRemoteFile();
     }
 
+    public String getRemoteLocation(){
+        return remoteRepository.getPath();
+    }
+
     public void setLocalRepository(Repository repository){
         localRepository = repository;
     }

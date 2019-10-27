@@ -132,4 +132,8 @@ public class Branch implements GitFile{
     public void setCommitSha1(String commitSha1){
         this.commitSha1 = commitSha1;
     }
+
+    public String getTrackingAfter(){
+        return trackingAfter;
+    }
 }
