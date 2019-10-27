@@ -22,8 +22,9 @@
     </div>
 
 </div>
-
 <div class="content">
+    <label>Username:&nbsp;&nbsp;</label>
+    <label id="activeUser"></label>
     <div class="container-fluid">
         <h1 align="center">MAGit Hub</h1>
         <ul>
@@ -34,6 +35,17 @@
             <li><a href="../../users/logout">Logout</a></li>
         </ul>
         <div class="container-fluid">
+            <div class="row">
+                <div class="col-8">
+                    <h4>Messages</h4>
+                    <div id="msgwindow">
+                        <div id="msgarea" class="span6"></div>
+                        <form id="msgform" method="GET" action="getMessages">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <br>
             <div class="row" style="background-color: #f3f3f3;" >
                 <div class="col-12">
                     <br>

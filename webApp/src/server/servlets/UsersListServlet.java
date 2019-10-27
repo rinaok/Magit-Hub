@@ -22,6 +22,7 @@ public class UsersListServlet extends HttpServlet {
     private final static String GET_ACTIVE_USER = "1";
     private final static String GET_USERLIST = "2";
     private final static String CLONE = "3";
+    private final static String CLEAN = "4";
     private UIManager uiManager;
     private MagitMsgManager msgManager;
 
@@ -86,6 +87,13 @@ public class UsersListServlet extends HttpServlet {
             case CLONE:
                 doClone(request, response);
                 break;
+            case CLEAN:
+                msgManager = ServletUtils.getMsgManager(getServletContext());
+                boolean isEmpty = msgManager.isEmpty();
+                String data = new Gson().toJson(isEmpty);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(data);
         }
     }
 

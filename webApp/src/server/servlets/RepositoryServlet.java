@@ -33,6 +33,7 @@ public class RepositoryServlet extends HttpServlet {
     private static final String GET_REPOSITORY_PAGE_COMMIT_FILES = "2";
     private static final String GET_FILE_CONTENT = "3";
     private static final String GET_OPEN_CHANGES = "4";
+    private static final String GET_ACTIVE_USER = "5";
 
     private UIManager uiManager;
     private Repository currRepo;
@@ -104,6 +105,12 @@ public class RepositoryServlet extends HttpServlet {
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write(toJSON);
                     break;
+                case GET_ACTIVE_USER:
+                    String user = SessionUtils.getUsername(request);
+                    user = new Gson().toJson(user);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write(user);
             }
         }
         catch (Exception e){

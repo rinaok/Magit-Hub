@@ -82,17 +82,12 @@ public class UIManager {
         startNewThread();
     }
 
-    private void startNewThread() throws InterruptedException {
+    private void startNewThread() throws InterruptedException, ExecutionException {
         CallableXml callableXml = new CallableXml();
         callableXml.setXmlEngine(systemEngine);
         ExecutorService executor = Executors.newFixedThreadPool(1);
         Future<?> future = executor.submit(callableXml);
-        try{
-            future.get();
-        }
-        catch (ExecutionException e){
-            e.printStackTrace();
-        }
+        future.get();
     }
 
     public boolean isXmlRepoExists(String path, String userName) throws XmlParseException {

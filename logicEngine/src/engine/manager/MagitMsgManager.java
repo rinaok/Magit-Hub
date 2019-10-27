@@ -1,5 +1,4 @@
 package engine.manager;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +10,7 @@ public class MagitMsgManager {
     public MagitMsgManager() {
         magitDataList = new HashMap<>();
     }
+    private boolean isFirst = true;
 
     public synchronized void addMsgString(String message, String timestamp, String user) {
         if(!magitDataList.containsKey(user))
@@ -33,5 +33,13 @@ public class MagitMsgManager {
             return magitDataList.get(user).size();
         else
             return 0;
+    }
+
+    public boolean isEmpty(){
+        if(isFirst) {
+            isFirst = false;
+            return true;
+        }
+        else return false;
     }
 }

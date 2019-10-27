@@ -4,6 +4,7 @@ var USER_LIST_URL = buildUrlWithContextPath("userslist");
 var GET_ACTIVE_USER = 1;
 var GET_USERLIST = 2;
 var CLONE = 3;
+var CLEAN_LOCAL = 4;
 
 function refreshUsersList(users) {
     $.each(users || [], function(index, username) {
@@ -36,6 +37,25 @@ $(function() { // onload...do
     $('#usersList').change(onUserListChanged);
 });
 
+$(function() { // onload...do
+    var data = "reqType=" + CLEAN_LOCAL;
+    $.ajax({
+        method: 'GET',
+        url: "users",
+        data: data,
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            if(r)
+                localStorage.clear();
+        }
+    });
+});
+
 function onUserListChanged(){
     var username = $('#usersList').val()[0];
     getRepositoryByName(username);
@@ -56,7 +76,6 @@ function appendMsgEntry(index, entry){
 }
 
 function createMsgEntry (entry){
-    //entry.message = entry.message.replace (":)", "<img class='smiley-image' src='../../common/images/smiley.png'/>");
     return $("<span class=\"success\">").append(entry.timestamp + "> " + entry.message);
 }
 
@@ -72,13 +91,16 @@ function ajaxUsersList(){
 }
 
 function ajaxMsgContent() {
+    var username = document.getElementById('activeUser').innerHTML;
+    msgVersion = getSessionItem(username);
     $.ajax({
         url: "messages",
         data: "msgVersion=" + msgVersion,
         success: function(data) {
             console.log("Server msg version: " + data.version + ", Current msg version: " + msgVersion);
-            if (data.version !== msgVersion) {
+            if (data.version != msgVersion) {
                 msgVersion = data.version;
+                setSessionItem(username, msgVersion);
                 appendToMsgArea(data.entries);
             }
             triggerAjaxMsgContent();
@@ -285,6 +307,75 @@ $(function() {
         if(document.getElementById("activeUser").innerHTML) {
             clearInterval(interval);
             getRepositoryByName(document.getElementById("activeUser").innerHTML);
+        }
+    }, 1000);
+});
+
+
+
+
+function setSessionItem(name, value) {
+    var mySession;
+    try {
+        mySession = JSON.parse(localStorage.getItem('mySession'));
+    } catch (e) {
+        console.log(e);
+        mySession = {};
+    }
+
+    mySession[name] = value;
+
+    mySession = JSON.stringify(mySession);
+
+    localStorage.setItem('mySession', mySession);
+}
+
+function getSessionItem(name) {
+    if(window.localStorage) {
+        var mySession = localStorage.getItem('mySession');
+        if (mySession) {
+            try {
+                mySession = JSON.parse(mySession);
+                return mySession[name];
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+}
+
+function restoreSession(data) {
+    for (var x in data) {
+        //use saved data to set values as needed
+        console.log(x, data[x]);
+    }
+}
+
+function addMsgListener() {
+        var mySession = localStorage.getItem('mySession');
+        if (mySession) {
+            try {
+                mySession = JSON.parse(localStorage.getItem('mySession'));
+            } catch (e) {
+                console.log(e);
+                mySession = {};
+            }
+            restoreSession(mySession);
+        } else {
+            localStorage.setItem('mySession', '{}');
+        }
+
+        var username = document.getElementById('activeUser').innerHTML;
+        if (!mySession[username]) {
+            setSessionItem(username, 0); //should not change on refresh
+        }
+}
+
+$(function() {
+    var interval = setInterval(function() {
+        if(document.getElementById("activeUser").innerHTML) {
+            clearInterval(interval);
+            addMsgListener();
         }
     }, 1000);
 });

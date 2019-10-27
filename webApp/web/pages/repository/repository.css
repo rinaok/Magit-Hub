@@ -74,3 +74,10 @@ td{
     padding-left: 0px;
     padding-right: 0px;
 }
+
+#msgarea {
+    height: 100px;
+    border: 1px solid #e7e7e7;
+    background-color: #f3f3f3;
+    overflow-y:auto;
+}
