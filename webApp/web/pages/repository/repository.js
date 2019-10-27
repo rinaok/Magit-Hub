@@ -423,9 +423,9 @@ function showCommits(commits){
 }
 
 $(document).on('click', '#checkout', function (event) {
-    if($('#newFilesList').children.length > 0 ||
-        $('#modifiedFilesList').children.length > 0  ||
-        $('#deletedFilesList').children.length > 0 ){
+    if($('#newFilesList')[0].children.length > 0 ||
+        $('#modifiedFilesList')[0].children.length > 0  ||
+        $('#deletedFilesList')[0].children.length > 0 ){
         alert("Can't perform checkout since there are open changes in the WC");
         return;
     }
