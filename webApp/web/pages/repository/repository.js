@@ -423,6 +423,12 @@ function showCommits(commits){
 }
 
 $(document).on('click', '#checkout', function (event) {
+    if($('#newFilesList').children.length > 0 ||
+        $('#modifiedFilesList').children.length > 0  ||
+        $('#deletedFilesList').children.length > 0 ){
+        alert("Can't perform checkout since there are open changes in the WC");
+        return;
+    }
     var branchName = event.currentTarget.parentElement.parentElement.firstChild.firstChild.innerText;
     var data = "reqType=" + CHECKOUT + "&name=" + encodeURIComponent(branchName);
     $.ajax({
