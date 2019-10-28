@@ -355,4 +355,17 @@ public class UIManager {
     public void acceptPR(PullRequest PR){
         systemEngine.acceptPR(PR);
     }
+
+    public boolean isRTB(String branch){
+        if(systemEngine.getBranchesManager().isBranchExists(branch)){
+            return systemEngine.getBranchesManager().getBranch(branch).getTracking();
+        }
+        return false;
+    }
+
+    public String getRemoteOwner() throws Exception {
+        if(systemEngine.getRepositoriesManager().getActive().isLocalRepository())
+            return systemEngine.getRemoteRepositoryOwner();
+        return null;
+    }
 }

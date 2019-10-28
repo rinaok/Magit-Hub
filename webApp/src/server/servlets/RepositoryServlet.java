@@ -1,12 +1,14 @@
 package server.servlets;
 
 import com.google.gson.Gson;
+import engine.manager.MagitMsgManager;
 import engine.manager.PRManager;
 import engine.manager.PullRequest;
 import engine.ui.UIManager;
 import logic.manager.Exceptions.FailedToCreateBranchException;
 import logic.manager.Exceptions.FailedToCreateRepositoryException;
 import logic.manager.Repository;
+import logic.manager.Utils;
 import logic.manager.WCFileNode;
 import logic.modules.Branch;
 import logic.modules.Commit;
@@ -40,6 +42,7 @@ public class RepositoryServlet extends HttpServlet {
     private UIManager uiManager;
     private Repository currRepo;
     private PRManager prManager;
+    private MagitMsgManager msgManager;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -172,6 +175,12 @@ public class RepositoryServlet extends HttpServlet {
         String[] data = br.readLine().split("&");
         String branchName = data[0];
         try {
+            if(uiManager.isRTB(branchName)) {
+                String ownerRemote = uiManager.getRemoteOwner();
+                msgManager = ServletUtils.getMsgManager(getServletContext());
+                msgManager.addMsgString("The branch [" + branchName + "] was deleted by [" +
+                        SessionUtils.getUsername(request) + "]", Utils.getTime(), ownerRemote);
+            }
             uiManager.deleteBranch(branchName);
             List<Branch> branches = uiManager.getBranches();
             String json = new Gson().toJson(branches);

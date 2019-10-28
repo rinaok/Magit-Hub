@@ -133,23 +133,24 @@ public class CollaborationServlet extends HttpServlet {
         PullRequest pr = prManager.getPRByID(Integer.parseInt(prID));
         if(pr == null)
             return;
-        PRStatus prStatus = PRStatus.OPEN;
+        PRStatus prStatus;
         switch (status){
             case "Open":
                 prStatus = PRStatus.OPEN;
                 break;
             case "Closed":
                 prStatus = PRStatus.CLOSED;
+                pr.setPRStatus(prStatus);
                 uiManager = ServletUtils.getUIManager(getServletContext());
                 uiManager.acceptPR(pr);
                 sendMsg(pr, SessionUtils.getUsername(request));
                 break;
             case "Rejected":
                 prStatus = PRStatus.REJECTED;
+                pr.setPRStatus(prStatus);
                 pr.setRejectedMsg(data[2]);
                 sendMsg(pr, SessionUtils.getUsername(request));
                 break;
         }
-        pr.setPRStatus(prStatus);
     }
 }
