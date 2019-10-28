@@ -39,10 +39,10 @@ public class CollaborationServlet extends HttpServlet {
                 uiManager.deltaCommitPR(pr);
                 prManager.addPR(pr, uiManager.getPullRequestUser());
                 msgManager = ServletUtils.getMsgManager(getServletContext());
-                String msgPR = "Pull Request #" + pr.getPrID() + " was sent by [" + username + "]\r\n" +
-                        "Repository: " + pr.getRepository() + "\r\n" +
-                        "Base Branch: " + pr.getBaseBranch() + "\r\n"
-                        + "Target Branch: " + pr.getTargetBranch() + "\r\n"
+                String msgPR = "Pull Request #" + pr.getPrID() + " was sent by [" + username + "]<br>" +
+                        "Repository: " + pr.getRepository() + "<br>" +
+                        "Base Branch: " + pr.getBaseBranch() + "<br>"
+                        + "Target Branch: " + pr.getTargetBranch() + "<br>"
                         + "PR Message: " + pr.getMsg();
                 msgManager.addMsgString(msgPR, Utils.getTime(), uiManager.getPullRequestUser());
             } catch (Exception e) {
@@ -55,17 +55,17 @@ public class CollaborationServlet extends HttpServlet {
         msgManager = ServletUtils.getMsgManager(getServletContext());
         switch (PR.getStatus()){
             case CLOSED:
-                String msgClosed = "Pull Request #" + PR.getPrID() + " was accepted by [" + username + "]\r\n" +
-                        "Base Branch: " + PR.getBaseBranch() + "\r\n"
-                        + "Target Branch: " + PR.getTargetBranch() + "\r\n"
+                String msgClosed = "Pull Request #" + PR.getPrID() + " was accepted by [" + username + "]<br>" +
+                        "Base Branch: " + PR.getBaseBranch() + "<br>"
+                        + "Target Branch: " + PR.getTargetBranch() + "<br>"
                         + "Date of PR: " + PR.getDate();
                 msgManager.addMsgString(msgClosed, Utils.getTime(), PR.getOwner());
                 break;
             case REJECTED:
-                String msgReject = "Pull Request #" + PR.getPrID() + " was rejected by [" + username + "]\r\n" +
-                        "Reason: " + PR.getRejectedMsg() + "\r\n" +
-                        "Base Branch: " + PR.getBaseBranch() + "\r\n"
-                        + "Target Branch: " + PR.getTargetBranch() + "\r\n"
+                String msgReject = "Pull Request #" + PR.getPrID() + " was rejected by [" + username + "]<br>" +
+                        "Reason: " + PR.getRejectedMsg() + "<br>" +
+                        "Base Branch: " + PR.getBaseBranch() + "<br>"
+                        + "Target Branch: " + PR.getTargetBranch() + "<br>"
                         + "Date of PR: " + PR.getDate();
                 msgManager.addMsgString(msgReject, Utils.getTime(), PR.getOwner());
                 break;

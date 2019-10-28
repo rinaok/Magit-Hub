@@ -504,10 +504,9 @@ $(document).on('click', '#deleteBranch', function (event) {
     var toDelete = confirm("Are you sure you want to delete this branch?");
     if(toDelete) {
         var branchName = event.currentTarget.parentElement.parentElement.firstChild.firstChild.innerText;
-        var data = encodeURIComponent(branchName);
         $.ajax({
             method: 'DELETE',
-            data: data,
+            data: branchName,
             url: "repo",
             processData: false, // Don't process the files
             contentType: false, // Set content type to false as jQuery will tell the server its a query string request
@@ -567,7 +566,7 @@ $(document).on('click', '#saveBtn', function (event) {
             $("#successAlert").show();
             setTimeout(function(){
                 $("#successAlert").hide();
-            }, 2000);
+            }, 5000);
             $('#fileContentModal').modal('hide');
             showOpenChanges();
         }
@@ -593,7 +592,7 @@ $(document).on('click', '#deleteBtn', function (event) {
                 $("#successAlert").show();
                 setTimeout(function(){
                     $("#successAlert").hide();
-                }, 2000);
+                }, 5000);
                 $('#fileContentModal').modal('hide');
                 showOpenChanges();
             }
@@ -646,7 +645,7 @@ $(document).on('click', '#submitBtn', function (event) {
             $("#successAlert").show();
             setTimeout(function(){
                 $("#successAlert").hide();
-            }, 2000);
+            }, 5000);
             $('#addFileModal').modal('hide');
             showOpenChanges();
         }
@@ -665,10 +664,7 @@ $(document).on('click', '#commitBtn', function (event) {
                 alert(e.response);
             },
             success: function (response) {
-                $("#successAlert").show();
-                setTimeout(function () {
-                    $("#successAlert").hide();
-                }, 2000);
+                alert("Changes were committed!");
                 $('#addFileModal').modal('hide');
                 showOpenChanges();
                 refreshWC();
@@ -764,7 +760,7 @@ function appendMsgEntry(index, entry){
 }
 
 function createMsgEntry (entry){
-    return $("<span class=\"success\">").append(entry.timestamp + "> " + entry.message);
+    return $("<span class=\"success\">").append("<b>" + entry.timestamp + "> </b>" + entry.message);
 }
 
 function ajaxMsgContent() {

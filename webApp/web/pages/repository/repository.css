@@ -81,3 +81,11 @@ td{
     background-color: #f3f3f3;
     overflow-y:auto;
 }
+
+#successAlert{
+    position: fixed;
+    bottom: 5px;
+    left:2%;
+    width: 96%;
+    z-index:99;
+}

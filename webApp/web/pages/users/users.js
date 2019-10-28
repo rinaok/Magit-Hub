@@ -76,7 +76,7 @@ function appendMsgEntry(index, entry){
 }
 
 function createMsgEntry (entry){
-    return $("<span class=\"success\">").append(entry.timestamp + "> " + entry.message);
+    return $("<span class=\"success\">").append("<b>" + entry.timestamp + "> </b>" + entry.message);
 }
 
 function ajaxUsersList(){
