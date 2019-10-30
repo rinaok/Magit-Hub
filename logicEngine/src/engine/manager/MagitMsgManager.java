@@ -28,18 +28,19 @@ public class MagitMsgManager {
         return null;
     }
 
-    public int getVersion(String user) {
+    public synchronized int getVersion(String user) {
         if(magitDataList.containsKey(user))
             return magitDataList.get(user).size();
         else
             return 0;
     }
 
-    public boolean isEmpty(){
+    public synchronized boolean isEmpty(){
         if(isFirst) {
             isFirst = false;
             return true;
         }
         else return false;
     }
+
 }

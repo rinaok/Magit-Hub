@@ -19,6 +19,83 @@ var PR = 2;
 var msgVersion = 0;
 var refreshRate = 2000; //milli seconds
 
+$(function() {
+    //on each call it triggers another execution of itself later (1 second later)
+    triggerAjaxMsgContent();
+});
+
+function triggerAjaxMsgContent() {
+    setTimeout(ajaxMsgContent, refreshRate);
+}
+
+
+function setSessionItem(name, value) {
+    var mySession;
+    try {
+        mySession = JSON.parse(localStorage.getItem('repoSession'));
+    } catch (e) {
+        console.log(e);
+        mySession = {};
+    }
+
+    mySession[name] = value;
+
+    mySession = JSON.stringify(mySession);
+
+    localStorage.setItem('repoSession', mySession);
+}
+
+function getSessionItem(name) {
+    if(window.localStorage) {
+        var mySession = localStorage.getItem('repoSession');
+        if (mySession) {
+            try {
+                mySession = JSON.parse(mySession);
+                return mySession[name];
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+}
+
+function restoreSession(data) {
+    for (var x in data) {
+        //use saved data to set values as needed
+        console.log(x, data[x]);
+    }
+}
+
+function addMsgListener() {
+    var mySession = localStorage.getItem('repoSession');
+    if (mySession) {
+        try {
+            mySession = JSON.parse(localStorage.getItem('repoSession'));
+        } catch (e) {
+            console.log(e);
+            mySession = {};
+        }
+        restoreSession(mySession);
+    } else {
+        localStorage.setItem('repoSession', '{}');
+    }
+
+    var username = document.getElementById('activeUser').innerHTML;
+    if (!mySession[username]) {
+        setSessionItem(username, 0); //should not change on refresh
+    }
+}
+
+$(function() {
+    var interval = setInterval(function() {
+        if(document.getElementById("activeUser").innerHTML) {
+            clearInterval(interval);
+            addMsgListener();
+        }
+    }, 1000);
+});
+
+
 $(function() { // onload...do
     $('#addFileModal').find('.modal-header h8').hide();
     $("#successAlert").hide();
@@ -742,26 +819,168 @@ $(function(){
         $that.parent().find('a').removeClass('active');
         $that.addClass('active');
     });
-})
+});
+
+// $(function(){
+//     $("#msgarea").append(messages).append("<br>");
+// });
 
 
-function appendToMsgArea(entries) {
-    // add the relevant entries
-    $.each(entries || [], appendMsgEntry);
+// function appendToMsgArea(entries) {
+//     // add the relevant entries
+//     $.each(entries || [], appendMsgEntry);
+//
+//     var scroller = $("#msgarea");
+//     var height = scroller.scrollTop() - $(scroller).height();
+//     $(scroller).stop().animate({ scrollTop: height }, "slow");
+// }
+//
+// function appendMsgEntry(index, entry){
+//     var entryElement = createMsgEntry(entry);
+//     $("#msgarea").append(entryElement).append("<br>");
+// }
+//
+// function createMsgEntry (entry){
+//     return $("<span class=\"success\">").append("<b>" + entry.timestamp + "> </b>" + entry.message);
+// }
+//
+// function ajaxMsgContent() {
+//     var username = document.getElementById('activeUser').innerHTML;
+//     msgVersion = getSessionItem(username);
+//     $.ajax({
+//         url: "messages",
+//         data: "msgVersion=" + msgVersion,
+//         success: function(data) {
+//             console.log("Server msg version: " + data.version + ", Current msg version: " + msgVersion);
+//             if (data.version != msgVersion) {
+//                 msgVersion = data.version;
+//                 setSessionItem(username, msgVersion);
+//                 appendToMsgArea(data.entries);
+//             }
+//             triggerAjaxMsgContent();
+//         },
+//         error: function(error) {
+//             triggerAjaxMsgContent();
+//         }
+//     });
+// }
+//
+// $(function() { // onload...do
+//     //add a function to the submit event
+//     $("#msgform").submit(function() {
+//         $.ajax({
+//             data: $(this).serialize(),
+//             url: "getMessages",
+//             timeout: 2000,
+//             error: function() {
+//                 console.error("Failed to submit");
+//             },
+//             success: function(r) {
+//                 //since it's going to be retrieved from the client.server
+//                 //$("#result h1").text(r);
+//             }
+//         });
+//
+//         $("#messages").val("");
+//         // by default - we'll always return false so it doesn't redirect the user.
+//         return false;
+//     });
+// });
+//
+// function triggerAjaxMsgContent() {
+//     setTimeout(ajaxMsgContent, refreshRate);
+// }
+//
+// $(function() {
+//     //on each call it triggers another execution of itself later (1 second later)
+//     triggerAjaxMsgContent();
+// });
+//
+//
+// function setSessionItem(name, value) {
+//     var mySession;
+//     try {
+//         mySession = JSON.parse(localStorage.getItem('mySession'));
+//     } catch (e) {
+//         console.log(e);
+//         mySession = {};
+//     }
+//
+//     mySession[name] = value;
+//
+//     mySession = JSON.stringify(mySession);
+//
+//     localStorage.setItem('mySession', mySession);
+// }
+//
+// function getSessionItem(name) {
+//     if(window.localStorage) {
+//         var mySession = localStorage.getItem('mySession');
+//         if (mySession) {
+//             try {
+//                 mySession = JSON.parse(mySession);
+//                 return mySession[name];
+//             } catch (e) {
+//                 console.log(e);
+//             }
+//         }
+//     }
+// }
+//
+// function restoreSession(data) {
+//     for (var x in data) {
+//         //use saved data to set values as needed
+//         console.log(x, data[x]);
+//     }
+// }
+//
+// function addMsgListener() {
+//     var mySession = localStorage.getItem('mySession');
+//     if (mySession) {
+//         try {
+//             mySession = JSON.parse(localStorage.getItem('mySession'));
+//         } catch (e) {
+//             console.log(e);
+//             mySession = {};
+//         }
+//         restoreSession(mySession);
+//     } else {
+//         localStorage.setItem('mySession', '{}');
+//     }
+//
+//     var username = document.getElementById('activeUser').innerHTML;
+//     if (!mySession[username]) {
+//         setSessionItem(username, 0); //should not change on refresh
+//     }
+// }
+//
+// $(function() {
+//     var interval = setInterval(function() {
+//         if(document.getElementById("activeUser").innerHTML) {
+//             clearInterval(interval);
+//             addMsgListener();
+//         }
+//     }, 1000);
+// });
 
-    var scroller = $("#msgarea");
-    var height = scroller.scrollTop() - $(scroller).height();
-    $(scroller).stop().animate({ scrollTop: height }, "slow");
-}
 
-function appendMsgEntry(index, entry){
-    var entryElement = createMsgEntry(entry);
-    $("#msgarea").append(entryElement).append("<br>");
-}
-
-function createMsgEntry (entry){
-    return $("<span class=\"success\">").append("<b>" + entry.timestamp + "> </b>" + entry.message);
-}
+$(function() { // onload...do
+    var data = "reqType=" + GET_ACTIVE_USER;
+    $.ajax({
+        method: 'GET',
+        url: "repo",
+        data: data,
+        processData: false, // Don't process the files
+        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+        timeout: 4000,
+        error: function (e) {
+            alert(e.responseText);
+        },
+        success: function (r) {
+            document.getElementById('activeUser').innerHTML = r;
+        }
+    });
+});
 
 function ajaxMsgContent() {
     var username = document.getElementById('activeUser').innerHTML;
@@ -783,120 +1002,3 @@ function ajaxMsgContent() {
         }
     });
 }
-
-$(function() { // onload...do
-    //add a function to the submit event
-    $("#msgform").submit(function() {
-        $.ajax({
-            data: $(this).serialize(),
-            url: "getMessages",
-            timeout: 2000,
-            error: function() {
-                console.error("Failed to submit");
-            },
-            success: function(r) {
-                //since it's going to be retrieved from the client.server
-                //$("#result h1").text(r);
-            }
-        });
-
-        $("#messages").val("");
-        // by default - we'll always return false so it doesn't redirect the user.
-        return false;
-    });
-});
-
-function triggerAjaxMsgContent() {
-    setTimeout(ajaxMsgContent, refreshRate);
-}
-
-$(function() {
-    //on each call it triggers another execution of itself later (1 second later)
-    triggerAjaxMsgContent();
-});
-
-
-function setSessionItem(name, value) {
-    var mySession;
-    try {
-        mySession = JSON.parse(localStorage.getItem('mySession'));
-    } catch (e) {
-        console.log(e);
-        mySession = {};
-    }
-
-    mySession[name] = value;
-
-    mySession = JSON.stringify(mySession);
-
-    localStorage.setItem('mySession', mySession);
-}
-
-function getSessionItem(name) {
-    if(window.localStorage) {
-        var mySession = localStorage.getItem('mySession');
-        if (mySession) {
-            try {
-                mySession = JSON.parse(mySession);
-                return mySession[name];
-            } catch (e) {
-                console.log(e);
-            }
-        }
-    }
-}
-
-function restoreSession(data) {
-    for (var x in data) {
-        //use saved data to set values as needed
-        console.log(x, data[x]);
-    }
-}
-
-function addMsgListener() {
-    var mySession = localStorage.getItem('mySession');
-    if (mySession) {
-        try {
-            mySession = JSON.parse(localStorage.getItem('mySession'));
-        } catch (e) {
-            console.log(e);
-            mySession = {};
-        }
-        restoreSession(mySession);
-    } else {
-        localStorage.setItem('mySession', '{}');
-    }
-
-    var username = document.getElementById('activeUser').innerHTML;
-    if (!mySession[username]) {
-        setSessionItem(username, 0); //should not change on refresh
-    }
-}
-
-$(function() {
-    var interval = setInterval(function() {
-        if(document.getElementById("activeUser").innerHTML) {
-            clearInterval(interval);
-            addMsgListener();
-        }
-    }, 1000);
-});
-
-
-$(function() { // onload...do
-    var data = "reqType=" + GET_ACTIVE_USER;
-    $.ajax({
-        method: 'GET',
-        url: "repo",
-        data: data,
-        processData: false, // Don't process the files
-        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-        timeout: 4000,
-        error: function (e) {
-            alert(e.responseText);
-        },
-        success: function (r) {
-            document.getElementById('activeUser').innerHTML = r;
-        }
-    });
-});

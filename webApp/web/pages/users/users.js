@@ -61,23 +61,24 @@ function onUserListChanged(){
     getRepositoryByName(username);
 }
 
-function appendToMsgArea(entries) {
-    // add the relevant entries
-    $.each(entries || [], appendMsgEntry);
-    
-    var scroller = $("#msgarea");
-    var height = scroller.scrollTop() - $(scroller).height();
-    $(scroller).stop().animate({ scrollTop: height }, "slow");
-}
-
-function appendMsgEntry(index, entry){
-    var entryElement = createMsgEntry(entry);
-    $("#msgarea").append(entryElement).append("<br>");
-}
-
-function createMsgEntry (entry){
-    return $("<span class=\"success\">").append("<b>" + entry.timestamp + "> </b>" + entry.message);
-}
+// function appendToMsgArea(entries) {
+//     // add the relevant entries
+//     $.each(entries || [], appendMsgEntry);
+//
+//     var scroller = $("#msgarea");
+//     var height = scroller.scrollTop() - $(scroller).height();
+//     $(scroller).stop().animate({ scrollTop: height }, "slow");
+//     messages = $("#msgarea")[0].innerHTML;
+// }
+//
+// function appendMsgEntry(index, entry){
+//     var entryElement = createMsgEntry(entry);
+//     $("#msgarea").append(entryElement).append("<br>");
+// }
+//
+// function createMsgEntry (entry){
+//     return $("<span class=\"success\">").append("<b>" + entry.timestamp + "> </b>" + entry.message);
+// }
 
 function ajaxUsersList(){
     var data = "reqType=" + GET_USERLIST;
@@ -90,58 +91,58 @@ function ajaxUsersList(){
     });
 }
 
-function ajaxMsgContent() {
-    var username = document.getElementById('activeUser').innerHTML;
-    msgVersion = getSessionItem(username);
-    $.ajax({
-        url: "messages",
-        data: "msgVersion=" + msgVersion,
-        success: function(data) {
-            console.log("Server msg version: " + data.version + ", Current msg version: " + msgVersion);
-            if (data.version != msgVersion) {
-                msgVersion = data.version;
-                setSessionItem(username, msgVersion);
-                appendToMsgArea(data.entries);
-            }
-            triggerAjaxMsgContent();
-        },
-        error: function(error) {
-            triggerAjaxMsgContent();
-        }
-    });
-}
-
-$(function() { // onload...do
-    //add a function to the submit event
-    $("#msgform").submit(function() {
-        $.ajax({
-            data: $(this).serialize(),
-            url: "getMessages",
-            timeout: 2000,
-            error: function() {
-                console.error("Failed to submit");
-            },
-            success: function(r) {
-                //since it's going to be retrieved from the client.server
-                //$("#result h1").text(r);
-            }
-        });
-
-        $("#messages").val("");
-        // by default - we'll always return false so it doesn't redirect the user.
-        return false;
-    });
-});
-
-function triggerAjaxMsgContent() {
-    setTimeout(ajaxMsgContent, refreshRate);
-}
+// function ajaxMsgContent() {
+//     var username = document.getElementById('activeUser').innerHTML;
+//     msgVersion = getSessionItem(username);
+//     $.ajax({
+//         url: "messages",
+//         data: "msgVersion=" + msgVersion,
+//         success: function(data) {
+//             console.log("Server msg version: " + data.version + ", Current msg version: " + msgVersion);
+//             if (data.version != msgVersion) {
+//                 msgVersion = data.version;
+//                 setSessionItem(username, msgVersion);
+//                 appendToMsgArea(data.entries);
+//             }
+//             triggerAjaxMsgContent();
+//         },
+//         error: function(error) {
+//             triggerAjaxMsgContent();
+//         }
+//     });
+// }
+//
+// $(function() { // onload...do
+//     //add a function to the submit event
+//     $("#msgform").submit(function() {
+//         $.ajax({
+//             data: $(this).serialize(),
+//             url: "getMessages",
+//             timeout: 2000,
+//             error: function() {
+//                 console.error("Failed to submit");
+//             },
+//             success: function(r) {
+//                 //since it's going to be retrieved from the client.server
+//                 //$("#result h1").text(r);
+//             }
+//         });
+//
+//         $("#messages").val("");
+//         // by default - we'll always return false so it doesn't redirect the user.
+//         return false;
+//     });
+// });
+//
+// function triggerAjaxMsgContent() {
+//     setTimeout(ajaxMsgContent, refreshRate);
+// }
 
 //activate the timer calls after the page is loaded
 $(function() {
     //The users list is refreshed automatically every second
     setInterval(ajaxUsersList, refreshRate);
-    
+
     //on each call it triggers another execution of itself later (1 second later)
     triggerAjaxMsgContent();
 });
@@ -379,3 +380,24 @@ $(function() {
         }
     }, 1000);
 });
+
+function ajaxMsgContent() {
+    var username = document.getElementById('activeUser').innerHTML;
+    msgVersion = getSessionItem(username);
+    $.ajax({
+        url: "messages",
+        data: "msgVersion=" + msgVersion,
+        success: function(data) {
+            console.log("Server msg version: " + data.version + ", Current msg version: " + msgVersion);
+            if (data.version != msgVersion) {
+                msgVersion = data.version;
+                setSessionItem(username, msgVersion);
+                appendToMsgArea(data.entries);
+            }
+            triggerAjaxMsgContent();
+        },
+        error: function(error) {
+            triggerAjaxMsgContent();
+        }
+    });
+}

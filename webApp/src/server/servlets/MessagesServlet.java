@@ -1,12 +1,10 @@
 package server.servlets;
-
 import server.constants.Constants;
 import server.utils.ServletUtils;
 import server.utils.SessionUtils;
 import com.google.gson.Gson;
 import engine.manager.MagitMsgManager;
 import engine.manager.SingleMessageEntry;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -95,6 +93,7 @@ public class MessagesServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
+
 
     /**
      * Returns a short description of the servlet.
