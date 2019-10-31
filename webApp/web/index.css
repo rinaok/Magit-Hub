@@ -1,0 +1,57 @@
+body{
+    color:darkblue;
+    font:600 16px/18px 'Open Sans',sans-serif;
+    background: lightslategrey;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+form {border: 1px solid #f1f1f1;}
+
+input[type=text] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    max-width: 500px;
+}
+
+
+#legend{
+    padding: 20px 20px;
+}
+
+button {
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    max-width: 200px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+
+#login-wrap{
+    margin: 0;
+    position: relative;
+    align-items: center;
+    top: 30%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
+    max-height:670px;
+    height: auto;
+    width: 40%;
+    min-width: 320px;
+    max-width: 475px;
+    background: #fff;
+}
